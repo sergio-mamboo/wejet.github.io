@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Недельный отчёт · Сотрудники ОП — прототип</title>
+<style>
+  :root{
+    --bg:#f2efe7;
+    --surface:#ffffff;
+    --surface-2:#faf8f2;
+    --ink:#1b1e1a;
+    --ink-soft:#3c403a;
+    --muted:#6d7268;
+    --faint:#9aa096;
+    --line:#e3ddd0;
+    --line-strong:#cfc7b6;
+    --accent:#0e7a58;
+    --accent-deep:#0a5c42;
+    --accent-soft:#e2efe8;
+    --accent-ink:#0a5c42;
+    --warn:#b95a1f;
+    --warn-soft:#f6e7da;
+    --mono:"Cascadia Mono","Consolas","SF Mono",ui-monospace,monospace;
+    --sans:"Segoe UI","Helvetica Neue",system-ui,sans-serif;
+    --shadow:0 1px 2px rgba(27,30,26,.05),0 8px 24px rgba(27,30,26,.06);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgba(14,122,88,.08), transparent 60%),
+      radial-gradient(900px 400px at -10% 0%, rgba(185,90,31,.06), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+    padding:28px clamp(16px,4vw,56px) 60px;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;margin-bottom:22px;
+  }
+  .eyebrow{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent-ink);font-weight:700;margin-bottom:8px;
+  }
+  h1{
+    font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.02em;
+    line-height:1.05;
+  }
+  .subtitle{color:var(--muted);font-size:14px;margin-top:8px}
+  .cutoff{
+    text-align:right;font-size:12px;color:var(--muted);
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);
+  }
+  .cutoff b{display:block;font-family:var(--mono);font-size:15px;color:var(--ink);margin-top:2px}
+  .cutoff .lbl{letter-spacing:.14em;text-transform:uppercase;font-size:10px;color:var(--faint)}
+
+  /* ---------- Filters ---------- */
+  .filters{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:16px 18px;margin-bottom:20px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:16px;align-items:end;
+  }
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;
+  }
+  .field select,.field .chips{
+    font-family:var(--sans);font-size:14px;color:var(--ink);
+    background:var(--surface-2);border:1px solid var(--line-strong);
+    border-radius:9px;padding:9px 11px;outline:none;cursor:pointer;
+    transition:border-color .15s,box-shadow .15s;
+  }
+  .field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:7px}
+  .chip{
+    font-size:12.5px;padding:5px 10px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--line-strong);background:var(--surface);
+    color:var(--ink-soft);user-select:none;transition:all .15s;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .chip.off{opacity:.45}
+
+  /* ---------- KPI ---------- */
+  .kpis{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:14px;margin-bottom:22px;
+  }
+  .kpi{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:16px 18px;position:relative;overflow:hidden;
+  }
+  .kpi::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:var(--accent);opacity:.9;
+  }
+  .kpi.warn::before{background:var(--warn)}
+  .kpi .k-label{
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;
+  }
+  .kpi .k-value{
+    font-family:var(--mono);font-size:26px;font-weight:700;
+    letter-spacing:-.02em;margin-top:8px;color:var(--ink);
+  }
+  .kpi .k-sub{font-size:12px;color:var(--faint);margin-top:4px}
+
+  /* ---------- Matrix ---------- */
+  .matrix-wrap{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+  }
+  .matrix-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 18px;border-bottom:1px solid var(--line);
+  }
+  .matrix-head h2{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .matrix-head .hint{font-size:12px;color:var(--faint)}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:760px}
+  th,td{padding:12px 14px;text-align:right;border-bottom:1px solid var(--line)}
+  th{
+    font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;background:var(--surface-2);
+    white-space:nowrap;position:sticky;top:0;
+  }
+  th.rowhead,td.rowhead{text-align:left}
+  td.rowhead{font-weight:700;font-size:13.5px;color:var(--ink-soft);white-space:nowrap}
+  td.rowhead .sub{display:block;font-weight:400;font-size:11px;color:var(--faint)}
+  td.cell{position:relative;font-family:var(--mono);font-size:14px;font-weight:600}
+  td.cell .sum{display:block;font-size:10.5px;color:var(--muted);font-weight:500;margin-top:2px}
+  td.cell.zero{color:var(--faint);font-weight:400}
+  td.total{font-family:var(--mono);font-weight:700;background:var(--accent-soft);color:var(--accent-ink)}
+  td.total .sum{display:block;font-size:10.5px;color:var(--accent-ink);opacity:.75;margin-top:2px}
+  tr.grand td{
+    background:var(--ink);color:#fff;font-family:var(--mono);font-weight:700;
+    border-bottom:none;
+  }
+  tr.grand td.rowhead{color:#fff}
+  tr.grand td .sum{color:#cfe6dc}
+  tr.grand th,tr.grand td{border-top:2px solid var(--ink)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr{transition:opacity .2s,transform .2s}
+  tbody tr.hidden{display:none}
+
+  .foot{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);
+  }
+  .foot .demo{color:var(--warn);font-weight:600;letter-spacing:.04em}
+
+  @media (max-width:640px){
+    .cutoff{text-align:left}
+    .topbar{align-items:flex-start}
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">Аналитические отчёты · Сделки</div>
+      <h1>Недельный отчёт — Сотрудники отдела продаж</h1>
+      <div class="subtitle">Фактическое распределение сделок по стадиям · снимок на конец недели</div>
+    </div>
+    <div class="cutoff">
+      <span class="lbl">Точка среза</span>
+      <b id="cutoffDate">—</b>
+    </div>
+  </header>
+
+  <section class="filters">
+    <div class="field">
+      <label for="emp">Сотрудник</label>
+      <select id="emp"></select>
+    </div>
+    <div class="field">
+      <label for="week">Неделя</label>
+      <select id="week"></select>
+    </div>
+    <div class="field">
+      <label>Воронки</label>
+      <div class="chips" id="funnels"></div>
+    </div>
+  </section>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="matrix-wrap">
+    <div class="matrix-head">
+      <h2>Матрица «Воронки × Виртуальные стадии»</h2>
+      <span class="hint">ячейка — количество сделок · сумма поля «Сумма»</span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="foot">
+      <span>Прототип интерфейса · <span class="demo">демо-данные</span></span>
+      <span id="footNote"></span>
+    </div>
+  </section>
+
+<script>
+  // ---------- Демо-данные (детерминированный генератор) ----------
+  const EMPLOYEES = ["Анна Соколова","Дмитрий Ковалёв","Мария Лебедева"];
+  const WEEKS = [
+    {id:"w0", label:"Текущая · 28 сен – 2 окт", monday:"2026-09-28"},
+    {id:"w1", label:"Предыдущая · 21 – 25 сен", monday:"2026-09-21"},
+    {id:"w2", label:"2 недели назад · 14 – 18 сен", monday:"2026-09-14"}
+  ];
+  const FUNNELS = ["Обследование","Продажа ПО","Поддержка","Обучение"];
+  const STAGES = ["Подготовка КП","Согласование договора","Подписание","Заключено","Передано в работу"];
+
+  // mulberry32 — детерминированный PRNG
+  function mulberry32(a){
+    return function(){
+      a|=0; a=a+0x6D2B79F5|0;
+      let t=Math.imul(a^a>>>15,1|a);
+      t=t+Math.imul(t^t>>>7,61|t)^t;
+      return ((t^t>>>14)>>>0)/4294967296;
+    };
+  }
+  function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+
+  // средняя сумма сделки зависит от воронки
+  const AVG = {"Обследование":420000,"Продажа ПО":780000,"Поддержка":260000,"Обучение":340000};
+
+  // строим данные: data[emp][weekId][funnel][stage] = {count, sum}
+  const data = {};
+  EMPLOYEES.forEach((emp,ei)=>{
+    data[emp]={};
+    WEEKS.forEach((wk,wi)=>{
+      data[emp][wk.id]={};
+      const rnd=mulberry32(hashStr(emp+wk.id));
+      FUNNELS.forEach((fn,fi)=>{
+        data[emp][wk.id][fn]={};
+        STAGES.forEach((st,si)=>{
+          // больше сделок в начале воронки, меньше к финалу; у «Заключено»/«Передано» — заметная доля
+          let base = 1 + Math.floor(rnd()*4);
+          if(si>=3) base = 1 + Math.floor(rnd()*3);
+          const count = base;
+          const sum = Math.round(count * AVG[fn] * (0.7 + rnd()*0.6));
+          data[emp][wk.id][fn][st]={count,sum};
+        });
+      });
+    });
+  });
+
+  // ---------- Состояние ----------
+  const state = { emp:EMPLOYEES[0], week:WEEKS[0].id, funnels:new Set(FUNNELS) };
+
+  // ---------- Рендер ----------
+  const $emp=document.getElementById("emp");
+  const $week=document.getElementById("week");
+  const $funnels=document.getElementById("funnels");
+  const $thead=document.getElementById("thead");
+  const $tbody=document.getElementById("tbody");
+  const $kpis=document.getElementById("kpis");
+  const $cutoff=document.getElementById("cutoffDate");
+  const $foot=document.getElementById("footNote");
+
+  function fmt(n){return n.toLocaleString("ru-RU");}
+  function fmtMoney(n){return fmt(n)+" ₽";}
+
+  function initControls(){
+    EMPLOYEES.forEach(e=>{const o=document.createElement("option");o.value=e;o.textContent=e;$emp.appendChild(o);});
+    WEEKS.forEach(w=>{const o=document.createElement("option");o.value=w.id;o.textContent=w.label;$week.appendChild(o);});
+    FUNNELS.forEach(fn=>{
+      const c=document.createElement("span");
+      c.className="chip on";c.textContent=fn;c.dataset.fn=fn;
+      c.addEventListener("click",()=>{
+        if(state.funnels.has(fn)){state.funnels.delete(fn);c.classList.remove("on");c.classList.add("off");}
+        else{state.funnels.add(fn);c.classList.add("on");c.classList.remove("off");}
+        render();
+      });
+      $funnels.appendChild(c);
+    });
+    $emp.addEventListener("change",()=>{state.emp=$emp.value;render();});
+    $week.addEventListener("change",()=>{state.week=$week.value;render();});
+  }
+
+  function cutoffDate(){
+    const wk=WEEKS.find(w=>w.id===state.week);
+    const d=new Date(wk.monday+"T00:00:00");
+    d.setDate(d.getDate()+4); // пятница
+    return d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+  }
+
+  function render(){
+    const d=data[state.emp][state.week];
+    const activeFunnels=FUNNELS.filter(f=>state.funnels.has(f));
+
+    // KPI
+    let totalCount=0,totalSum=0,workCount=0,closedCount=0;
+    activeFunnels.forEach(fn=>{
+      STAGES.forEach((st,si)=>{
+        const c=d[fn][st].count,s=d[fn][st].sum;
+        totalCount+=c;totalSum+=s;
+        if(si<3)workCount+=c;else closedCount+=c;
+      });
+    });
+    const kpis=[
+      {l:"Всего сделок",v:fmt(totalCount),s:"на дату среза"},
+      {l:"Сумма, всего",v:fmtMoney(totalSum),s:"поле «Сумма»"},
+      {l:"В работе",v:fmt(workCount),s:"до «Заключено»",warn:true},
+      {l:"Заключено / в работе",v:fmt(closedCount),s:"финальные стадии"}
+    ];
+    $kpis.innerHTML=kpis.map(k=>
+      `<div class="kpi ${k.warn?"warn":""}"><div class="k-label">${k.l}</div><div class="k-value">${k.v}</div><div class="k-sub">${k.s}</div></div>`
+    ).join("");
+
+    $cutoff.textContent=cutoffDate();
+
+    // Шапка таблицы
+    $thead.innerHTML=`<tr><th class="rowhead">Воронка</th>${STAGES.map(s=>`<th>${s}</th>`).join("")}<th>Итог по воронке</th></tr>`;
+
+    // Сводные по стадиям
+    const stageTotals=STAGES.map((st,si)=>{
+      let c=0,s=0;
+      activeFunnels.forEach(fn=>{c+=d[fn][st].count;s+=d[fn][st].sum;});
+      return {c,s};
+    });
+    let grandC=0,grandS=0;
+    stageTotals.forEach(t=>{grandC+=t.c;grandS+=t.s;});
+
+    // Максимум для тепловой карты
+    let max=1;
+    activeFunnels.forEach(fn=>STAGES.forEach(st=>{max=Math.max(max,d[fn][st].count);}));
+
+    let rows="";
+    activeFunnels.forEach(fn=>{
+      let rowC=0,rowS=0;
+      const cells=STAGES.map((st,si)=>{
+        const v=d[fn][st];rowC+=v.count;rowS+=v.sum;
+        const heat=v.count/max;
+        const bg=`rgba(14,122,88,${(0.06+heat*0.5).toFixed(3)})`;
+        return `<td class="cell ${v.count===0?"zero":""}" style="background:${v.count?bg:"transparent"}">${v.count}<span class="sum">${fmtMoney(v.sum)}</span></td>`;
+      }).join("");
+      rows+=`<tr><td class="rowhead">${fn}<span class="sub">${fmt(rowC)} сделок · ${fmtMoney(rowS)}</span></td>${cells}<td class="total">${fmt(rowC)}<span class="sum">${fmtMoney(rowS)}</span></td></tr>`;
+    });
+
+    // Строка итогов по стадиям
+    const stageRow=stageTotals.map((t,i)=>`<td class="total">${fmt(t.c)}<span class="sum">${fmtMoney(t.s)}</span></td>`).join("");
+    rows+=`<tr><td class="rowhead">Итог по стадиям</td>${stageRow}<td class="total">${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
+
+    // Общий итог по сотруднику
+    rows+=`<tr class="grand"><td class="rowhead">Итог по сотруднику</td>${STAGES.map(()=>`<td></td>`).join("")}<td>${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
+
+    $tbody.innerHTML=rows;
+    $foot.textContent=`${state.emp} · ${WEEKS.find(w=>w.id===state.week).label}`;
+  }
+
+  initControls();
+  render();
+</script>
+</body>
+</html>
