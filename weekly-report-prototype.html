@@ -358,7 +358,7 @@
     rows+=`<tr><td class="rowhead">Итог по стадиям</td>${stageRow}<td class="total">${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
 
     // Общий итог по сотруднику
-    rows+=`<tr class="grand"><td class="rowhead">Итог по сотруднику</td>${STAGES.map(()=>`<td></td>`).join("")}<td>${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
+    rows+=`<tr class="grand"><td class="rowhead">Итог по сотруднику</td>${STAGES.map(()=>`<td></td>`).join("")}<td class="total">${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
 
     $tbody.innerHTML=rows;
     $foot.textContent=`${state.emp} · ${WEEKS.find(w=>w.id===state.week).label}`;
