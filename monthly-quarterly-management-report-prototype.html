@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Месячный / Квартальный отчёт · Руководство — прототип</title>
+<style>
+  :root{
+    --bg:#f2efe7;
+    --surface:#ffffff;
+    --surface-2:#faf8f2;
+    --ink:#1b1e1a;
+    --ink-soft:#3c403a;
+    --muted:#6d7268;
+    --faint:#9aa096;
+    --line:#e3ddd0;
+    --line-strong:#cfc7b6;
+    --accent:#0e7a58;
+    --accent-deep:#0a5c42;
+    --accent-soft:#e2efe8;
+    --accent-ink:#0a5c42;
+    --warn:#b95a1f;
+    --mono:"Cascadia Mono","Consolas","SF Mono",ui-monospace,monospace;
+    --sans:"Segoe UI","Helvetica Neue",system-ui,sans-serif;
+    --shadow:0 1px 2px rgba(27,30,26,.05),0 8px 24px rgba(27,30,26,.06);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgba(14,122,88,.08), transparent 60%),
+      radial-gradient(900px 400px at -10% 0%, rgba(185,90,31,.06), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+    padding:28px clamp(16px,4vw,56px) 60px;
+  }
+
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
+  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-ink);font-weight:700;margin-bottom:8px}
+  h1{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  .subtitle{color:var(--muted);font-size:14px;margin-top:8px}
+  .scope{text-align:right;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow)}
+  .scope b{display:block;font-family:var(--mono);font-size:15px;color:var(--ink);margin-top:2px}
+  .scope .lbl{letter-spacing:.14em;text-transform:uppercase;font-size:10px;color:var(--faint)}
+
+  .controls{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:16px 18px;margin-bottom:20px;
+    display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;
+  }
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .seg{display:flex;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:10px;padding:3px;gap:3px}
+  .seg button{
+    font-family:var(--sans);font-size:13px;font-weight:700;color:var(--muted);
+    background:transparent;border:none;border-radius:7px;padding:8px 18px;cursor:pointer;
+    transition:all .15s;
+  }
+  .seg button.on{background:var(--accent);color:#fff;box-shadow:0 1px 3px rgba(10,92,66,.3)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:7px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px}
+  .chip{font-size:12.5px;padding:5px 10px;border-radius:999px;cursor:pointer;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);user-select:none;transition:all .15s}
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .chip.off{opacity:.45}
+
+  .matrix-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .matrix-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .matrix-head h2{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .matrix-head .hint{font-size:12px;color:var(--faint)}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:760px}
+  th,td{padding:14px 16px;text-align:right;border-bottom:1px solid var(--line)}
+  th{
+    font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+    font-weight:700;background:var(--surface-2);white-space:nowrap;vertical-align:bottom;
+  }
+  th .src{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:10.5px;color:var(--faint);margin-top:4px;line-height:1.35}
+  th.rowhead,td.rowhead{text-align:left}
+  td.rowhead{font-weight:700;font-size:14px;color:var(--ink-soft);white-space:nowrap}
+  td.money{font-family:var(--mono);font-size:14px;font-weight:600}
+  tr.total td{background:var(--accent-soft);font-family:var(--mono);font-weight:700;color:var(--accent-ink)}
+  tr.total td.rowhead{color:var(--accent-ink)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr{transition:opacity .2s,transform .2s}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)}
+  .foot .demo{color:var(--warn);font-weight:600;letter-spacing:.04em}
+
+  @media (max-width:640px){.scope{text-align:left}.topbar{align-items:flex-start}}
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">Аналитические отчёты · Сделки</div>
+      <h1>Месячный / Квартальный отчёт — Руководство</h1>
+      <div class="subtitle">Показатели по сделкам по всем сотрудникам · валюта RUB</div>
+    </div>
+    <div class="scope">
+      <span class="lbl">Отделы</span>
+      <b id="scopeDepts">—</b>
+    </div>
+  </header>
+
+  <section class="controls">
+    <div class="field">
+      <label>Период</label>
+      <div class="seg" id="seg">
+        <button data-p="month" class="on">Месяц</button>
+        <button data-p="quarter">Квартал</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Отделы</label>
+      <div class="chips" id="depts"></div>
+    </div>
+  </section>
+
+  <section class="matrix-wrap">
+    <div class="matrix-head">
+      <h2 id="tableTitle">Показатели за текущий месяц</h2>
+      <span class="hint">суммы в рублях · период по «Дате заключения договора»</span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="foot">
+      <span>Прототип интерфейса · <span class="demo">демо-данные</span></span>
+      <span id="footNote"></span>
+    </div>
+  </section>
+
+<script>
+  // ---------- Демо-данные ----------
+  const DEPARTMENTS = ["Коммерческая Служба","Отдел развития"];
+  const QUARTERS = ["1кв","2кв","3кв","4кв"];
+  const CURRENT_MONTH = "Октябрь 2026";
+  const METRICS = ["closed","advance","closing","final"];
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+
+  // data[dept][period][metric] = sum
+  const data = {};
+  DEPARTMENTS.forEach(dept=>{
+    data[dept]={quarter:{},month:{}};
+    QUARTERS.forEach(q=>{
+      const rnd=mulberry32(hashStr(dept+"q"+q));
+      data[dept].quarter[q]={};
+      METRICS.forEach(m=>{ data[dept].quarter[q][m]=Math.round((500000+rnd()*4000000)/1000)*1000; });
+    });
+    const rnd=mulberry32(hashStr(dept+"month"));
+    data[dept].month={};
+    METRICS.forEach(m=>{ data[dept].month[m]=Math.round((500000+rnd()*4000000)/1000)*1000; });
+  });
+
+  const state = { period:"month", depts:new Set(DEPARTMENTS) };
+
+  const $seg=document.getElementById("seg");
+  const $depts=document.getElementById("depts");
+  const $thead=document.getElementById("thead");
+  const $tbody=document.getElementById("tbody");
+  const $title=document.getElementById("tableTitle");
+  const $scope=document.getElementById("scopeDepts");
+  const $foot=document.getElementById("footNote");
+
+  const HEADERS = [
+    {k:"closed", t:"Заключено на сумму", src:"сделки, «Договор заключён» = да · по дате заключения договора"},
+    {k:"advance", t:"Планируемое поступление авансов", src:"поле «Сумма аванса» · «Аванс получен» = да · по дате получения аванса"},
+    {k:"closing", t:"Планируемое закрытие сделок", src:"сумма сделок · по плановой дате закрытия"},
+    {k:"final", t:"Поступление окончательных расчётов", src:"поле «Сумма доплаты» · по дате заключения договора"}
+  ];
+
+  function fmt(n){return n.toLocaleString("ru-RU");}
+  function money(n){return fmt(n)+" ₽";}
+
+  function initControls(){
+    DEPARTMENTS.forEach(d=>{
+      const c=document.createElement("span");c.className="chip on";c.textContent=d;c.dataset.d=d;
+      c.addEventListener("click",()=>{
+        if(state.depts.has(d)){state.depts.delete(d);c.classList.remove("on");c.classList.add("off");}
+        else{state.depts.add(d);c.classList.add("on");c.classList.remove("off");}
+        render();
+      });
+      $depts.appendChild(c);
+    });
+    $seg.querySelectorAll("button").forEach(b=>{
+      b.addEventListener("click",()=>{
+        $seg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+        b.classList.add("on");
+        state.period=b.dataset.p;
+        render();
+      });
+    });
+  }
+
+  function render(){
+    const activeDepts=DEPARTMENTS.filter(d=>state.depts.has(d));
+    $scope.textContent=activeDepts.length===DEPARTMENTS.length?"Все отделы":activeDepts.join(", ");
+
+    $thead.innerHTML=`<tr><th class="rowhead">Период</th>${HEADERS.map(h=>`<th>${h.t}<span class="src">${h.src}</span></th>`).join("")}</tr>`;
+
+    let rows="";
+    let totals={closed:0,advance:0,closing:0,final:0};
+
+    if(state.period==="month"){
+      $title.textContent="Показатели за текущий месяц";
+      const vals={closed:0,advance:0,closing:0,final:0};
+      activeDepts.forEach(d=>METRICS.forEach(m=>vals[m]+=data[d].month[m]));
+      rows+=`<tr><td class="rowhead">${CURRENT_MONTH}</td>${HEADERS.map(h=>`<td class="money">${money(vals[h.k])}</td>`).join("")}</tr>`;
+      METRICS.forEach(m=>totals[m]+=vals[m]);
+    }else{
+      $title.textContent="Показатели по кварталам года";
+      QUARTERS.forEach(q=>{
+        const vals={closed:0,advance:0,closing:0,final:0};
+        activeDepts.forEach(d=>METRICS.forEach(m=>vals[m]+=data[d].quarter[q][m]));
+        rows+=`<tr><td class="rowhead">${q}</td>${HEADERS.map(h=>`<td class="money">${money(vals[h.k])}</td>`).join("")}</tr>`;
+        METRICS.forEach(m=>totals[m]+=vals[m]);
+      });
+    }
+
+    rows+=`<tr class="total"><td class="rowhead">Итого</td>${HEADERS.map(h=>`<td>${money(totals[h.k])}</td>`).join("")}</tr>`;
+    $tbody.innerHTML=rows;
+    $foot.textContent=`${state.period==="month"?"месяц":"квартал"} · ${activeDepts.length} отделов`;
+  }
+
+  initControls();
+  render();
+</script>
+</body>
+</html>
