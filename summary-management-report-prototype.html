@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сводный отчёт · Руководство — прототип</title>
+<style>
+  :root{
+    --bg:#f2efe7;
+    --surface:#ffffff;
+    --surface-2:#faf8f2;
+    --ink:#1b1e1a;
+    --ink-soft:#3c403a;
+    --muted:#6d7268;
+    --faint:#9aa096;
+    --line:#e3ddd0;
+    --line-strong:#cfc7b6;
+    --accent:#0e7a58;
+    --accent-deep:#0a5c42;
+    --accent-soft:#e2efe8;
+    --accent-ink:#0a5c42;
+    --warn:#b95a1f;
+    --mono:"Cascadia Mono","Consolas","SF Mono",ui-monospace,monospace;
+    --sans:"Segoe UI","Helvetica Neue",system-ui,sans-serif;
+    --shadow:0 1px 2px rgba(27,30,26,.05),0 8px 24px rgba(27,30,26,.06);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgba(14,122,88,.08), transparent 60%),
+      radial-gradient(900px 400px at -10% 0%, rgba(185,90,31,.06), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+    padding:28px clamp(16px,4vw,56px) 60px;
+  }
+
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
+  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-ink);font-weight:700;margin-bottom:8px}
+  h1{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  .subtitle{color:var(--muted);font-size:14px;margin-top:8px}
+  .scope{text-align:right;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow)}
+  .scope b{display:block;font-family:var(--mono);font-size:15px;color:var(--ink);margin-top:2px}
+  .scope .lbl{letter-spacing:.14em;text-transform:uppercase;font-size:10px;color:var(--faint)}
+
+  .matrix-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .matrix-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .matrix-head h2{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .matrix-head .hint{font-size:12px;color:var(--faint)}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:1100px}
+  th,td{padding:12px 14px;text-align:right;border-bottom:1px solid var(--line)}
+  th{
+    font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    font-weight:700;background:var(--surface-2);white-space:nowrap;vertical-align:bottom;
+  }
+  th .src{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--faint);margin-top:3px;line-height:1.3}
+  th.rowhead,td.rowhead{text-align:left}
+  td.rowhead{font-weight:700;font-size:13.5px;color:var(--ink-soft);white-space:nowrap}
+  td.money{font-family:var(--mono);font-size:13px;font-weight:600}
+  td.pct{font-family:var(--mono);font-size:13px;font-weight:700}
+  tr.grand td{background:var(--ink);color:#fff;font-family:var(--mono);font-weight:700;border-bottom:none}
+  tr.grand td.rowhead{color:#fff}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr{transition:opacity .2s,transform .2s}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)}
+  .foot .demo{color:var(--warn);font-weight:600;letter-spacing:.04em}
+
+  @media (max-width:640px){.scope{text-align:left}.topbar{align-items:flex-start}}
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">Аналитические отчёты · Сделки</div>
+      <h1>Сводный отчёт — Руководство</h1>
+      <div class="subtitle">План-факт по холдингам · группировка по элементам списка «Холдинги»</div>
+    </div>
+    <div class="scope">
+      <span class="lbl">Дата формирования</span>
+      <b id="scopeDate">—</b>
+    </div>
+  </header>
+
+  <section class="matrix-wrap">
+    <div class="matrix-head">
+      <h2>Свод по холдингам</h2>
+      <span class="hint">показатели сделок с компаниями, принадлежащими холдингу</span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="foot">
+      <span>Прототип интерфейса · <span class="demo">демо-данные</span></span>
+      <span id="footNote"></span>
+    </div>
+  </section>
+
+<script>
+  // ---------- Демо-данные (из макета) ----------
+  const HOLDINGS = [
+    {name:"Холдинг 1", f:50000000, b:25000000, plan:17500000, work:19230769, z:9615384},
+    {name:"Холдинг 2", f:24000000, b:4000000, plan:2800000, work:5200000, z:1300000},
+    {name:"Холдинг 3", f:200000000, b:133333333, plan:93333333, work:95238095, z:13605442},
+    {name:"Холдинг 4", f:1000000, b:1000000, plan:700000, work:769231, z:384615},
+    {name:"Холдинг 5", f:65000000, b:81250000, plan:56875000, work:105625000, z:26406250},
+    {name:"Холдинг 6", f:800000000, b:421052632, plan:294736842, work:300751880, z:42964554},
+    {name:"Холдинг 7", f:1000000000, b:500000000, plan:350000000, work:384615385, z:192307692},
+    {name:"Холдинг 8", f:789000000, b:131500000, plan:92050000, work:170950000, z:42737500},
+    {name:"Холдинг 9", f:7000000, b:4666667, plan:3266667, work:3333333, z:476190},
+    {name:"Холдинг 10", f:79000000, b:79000000, plan:55300000, work:60769231, z:30384615},
+    {name:"Холдинг 11", f:120000000, b:150000000, plan:105000000, work:195000000, z:48750000},
+    {name:"Холдинг 12", f:654000000, b:344210526, plan:240947368, work:245864662, z:35123523},
+    {name:"Холдинг 13", f:45000000, b:22500000, plan:15750000, work:17307692, z:8653846},
+    {name:"Холдинг 14", f:2000000, b:333333, plan:233333, work:433333, z:108333},
+    {name:"Холдинг 15", f:37000000, b:24666667, plan:17266667, work:17619048, z:2517007}
+  ];
+
+  const $thead=document.getElementById("thead");
+  const $tbody=document.getElementById("tbody");
+  const $scope=document.getElementById("scopeDate");
+  const $foot=document.getElementById("footNote");
+
+  const HEADERS = [
+    {k:"f", t:"ФПС", src:"сумма по контрагентам холдинга · карты контрагентов"},
+    {k:"b", t:"Планируемый бюджет", src:"сумма по контрагентам холдинга · карты контрагентов"},
+    {k:"plan", t:"План контрактации КС", src:"сумма целевых показателей сотрудников, ответственных за холдинг"},
+    {k:"work", t:"В работе", src:"сделки с вероятностью ≥ 50% · на дату формирования"},
+    {k:"z", t:"Заключено", src:"сделки с признаком «Договор заключён» · на дату формирования"},
+    {k:"pctPlan", t:"% выполнения плана", src:"Заключено ÷ План контрактации"},
+    {k:"pctMarket", t:"% охвата рынка", src:"Бюджет ÷ В работе"}
+  ];
+
+  function fmt(n){return n.toLocaleString("ru-RU");}
+  function money(n){return fmt(Math.round(n))+" ₽";}
+  function pct(n){return (n*100).toFixed(1).replace(".",",")+"%";}
+
+  function render(){
+    $scope.textContent=new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+    $thead.innerHTML=`<tr><th class="rowhead">Холдинг</th>${HEADERS.map(h=>`<th>${h.t}<span class="src">${h.src}</span></th>`).join("")}</tr>`;
+
+    let rows="";
+    let gF=0,gB=0,gPlan=0,gWork=0,gZ=0;
+    HOLDINGS.forEach(h=>{
+      const pctPlan=h.z/h.plan;
+      const pctMarket=h.b/h.work;
+      gF+=h.f;gB+=h.b;gPlan+=h.plan;gWork+=h.work;gZ+=h.z;
+      rows+=`<tr><td class="rowhead">${h.name}</td>
+        <td class="money">${money(h.f)}</td>
+        <td class="money">${money(h.b)}</td>
+        <td class="money">${money(h.plan)}</td>
+        <td class="money">${money(h.work)}</td>
+        <td class="money">${money(h.z)}</td>
+        <td class="pct">${pct(pctPlan)}</td>
+        <td class="pct">${pct(pctMarket)}</td></tr>`;
+    });
+    const gPctPlan=gZ/gPlan;
+    const gPctMarket=gB/gWork;
+    rows+=`<tr class="grand"><td class="rowhead">Общий итог</td>
+      <td>${money(gF)}</td><td>${money(gB)}</td><td>${money(gPlan)}</td>
+      <td>${money(gWork)}</td><td>${money(gZ)}</td>
+      <td>${pct(gPctPlan)}</td><td>${pct(gPctMarket)}</td></tr>`;
+
+    $tbody.innerHTML=rows;
+    $foot.textContent=`${HOLDINGS.length} холдингов`;
+  }
+
+  render();
+</script>
+</body>
+</html>
