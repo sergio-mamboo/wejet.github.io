@@ -186,6 +186,7 @@
     ]
   };
   const SECTION_LABEL = { staff:"Сотрудникам", management:"Руководству" };
+  const KEY_TO_SECTION = { weekly:"staff", monthly:"staff", rop:"staff", "weekly-management":"management" };
 
   const state = { section:"staff", active:null };
   const $tabs = document.getElementById("tabs");
@@ -205,6 +206,7 @@
       b.textContent=r.label;
       b.addEventListener("click",()=>{
         state.active=r.key;
+        location.hash = "/"+r.key;
         $tabs.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
         b.classList.add("active");
         showFrame(r.key);
@@ -219,16 +221,30 @@
       item.classList.add("active");
       state.section=item.dataset.section;
       state.active=REPORTS[state.section][0].key;
+      location.hash = "/"+state.active;
       $crumb.textContent="Отчёты · "+SECTION_LABEL[state.section];
       renderTabs();
       showFrame(state.active);
     });
   });
 
-  // инициализация
-  state.active=REPORTS.staff[0].key;
-  renderTabs();
-  showFrame(state.active);
+  function applyHash(){
+    const h = location.hash.replace(/^#\/?/, "");
+    if(h && KEY_TO_SECTION[h]){
+      state.section = KEY_TO_SECTION[h];
+      state.active = h;
+    } else {
+      state.section = "staff";
+      state.active = "weekly";
+    }
+    sectionItems.forEach(i=>i.classList.toggle("active", i.dataset.section===state.section));
+    $crumb.textContent="Отчёты · "+SECTION_LABEL[state.section];
+    renderTabs();
+    showFrame(state.active);
+  }
+
+  window.addEventListener("hashchange", applyHash);
+  applyHash();
 </script>
 </body>
 </html>
