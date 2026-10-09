@@ -300,7 +300,7 @@
     });
 
     rows+=`<tr><td class="rowhead">Итог по стадиям</td>${stageTotals.map(t=>`<td class="total">${fmt(t.c)}<span class="sum">${fmtMoney(t.s)}</span></td>`).join("")}<td class="total">${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
-    rows+=`<tr class="grand"><td class="rowhead">Итого по службе</td>${STAGES.map(()=>`<td></td>`).join("")}<td>${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
+    rows+=`<tr class="grand"><td class="rowhead">Итого по службе</td>${STAGES.map(()=>`<td></td>`).join("")}<td class="total">${fmt(grandC)}<span class="sum">${fmtMoney(grandS)}</span></td></tr>`;
 
     $tbody.innerHTML=rows;
     $foot.textContent=`${WEEKS.find(w=>w.id===state.week).label} · ${selectedEmps.length} сотрудников`;
