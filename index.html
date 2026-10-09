@@ -170,6 +170,7 @@
         <iframe class="frame" data-key="monthly" src="monthly-quarterly-report-prototype.html" title="Месячный / Квартальный отчёт"></iframe>
         <iframe class="frame" data-key="rop" src="rop-report-prototype.html" title="Отчёт для РКС"></iframe>
         <iframe class="frame" data-key="weekly-management" src="weekly-management-report-prototype.html" title="Еженедельный отчёт для руководства"></iframe>
+        <iframe class="frame" data-key="monthly-quarterly-management" src="monthly-quarterly-management-report-prototype.html" title="Месячный / Квартальный отчёт для руководства"></iframe>
       </div>
     </main>
   </div>
@@ -182,11 +183,12 @@
       {key:"rop", label:"РКС · план-факт"}
     ],
     management: [
-      {key:"weekly-management", label:"Еженедельный"}
+      {key:"weekly-management", label:"Еженедельный"},
+      {key:"monthly-quarterly-management", label:"Месячный / Квартальный"}
     ]
   };
   const SECTION_LABEL = { staff:"Сотрудникам", management:"Руководству" };
-  const KEY_TO_SECTION = { weekly:"staff", monthly:"staff", rop:"staff", "weekly-management":"management" };
+  const KEY_TO_SECTION = { weekly:"staff", monthly:"staff", rop:"staff", "weekly-management":"management", "monthly-quarterly-management":"management" };
 
   const state = { section:"staff", active:null };
   const $tabs = document.getElementById("tabs");
