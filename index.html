@@ -33,7 +33,7 @@
   .logo{
     display:flex;align-items:center;gap:10px;padding:16px 18px;
     color:#fff;font-weight:700;font-size:15px;letter-spacing:.01em;
-    border-bottom:1px solid rgba(255,255,255,.08);
+    border-bottom:1px solid rgba(255,255,255,.08);text-decoration:none;cursor:pointer;
   }
   .logo .mark{
     width:26px;height:26px;border-radius:7px;background:var(--accent);
@@ -104,7 +104,7 @@
   <div class="app">
     <!-- Left sidebar -->
     <aside class="sidebar">
-      <div class="logo"><span class="mark">Б</span>Битрикс24</div>
+      <a class="logo" href="https://sergio-mamboo.github.io/wejet.github.io/"><span class="mark">Б</span>Битрикс24</a>
       <nav class="side-menu">
         <a class="side-item disabled">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
@@ -178,7 +178,7 @@
 <script>
   const REPORTS = {
     staff: [
-      {key:"weekly", label:"Недельный"},
+      {key:"weekly", label:"Еженедельный"},
       {key:"monthly", label:"Месячный / Квартальный"},
       {key:"rop", label:"РКС · план-факт"}
     ],
