@@ -60,6 +60,13 @@
   td.rowhead{font-weight:700;font-size:13.5px;color:var(--ink-soft);white-space:nowrap}
   td.money{font-family:var(--mono);font-size:13px;font-weight:600}
   td.pct{font-family:var(--mono);font-size:13px;font-weight:700}
+  tr.holder td{background:var(--accent-soft);font-family:var(--mono);font-weight:700;color:var(--accent-ink);cursor:pointer}
+  tr.holder td.rowhead{color:var(--accent-ink)}
+  tr.holder td .caret{display:inline-block;transition:transform .2s;margin-right:8px;color:var(--accent-ink)}
+  tr.holder.open td .caret{transform:rotate(90deg)}
+  tr.company td{background:var(--surface-2);font-family:var(--mono);font-size:12.5px}
+  tr.company td.rowhead{font-weight:500;color:var(--ink-soft);padding-left:34px}
+  tr.company.hidden{display:none}
   tr.grand td{background:var(--ink);color:#fff;font-family:var(--mono);font-weight:700;border-bottom:none}
   tr.grand td.rowhead{color:#fff}
   tbody tr:last-child td{border-bottom:none}
@@ -77,7 +84,7 @@
     <div>
       <div class="eyebrow">Аналитические отчёты · Сделки</div>
       <h1>Сводный отчёт — Руководство</h1>
-      <div class="subtitle">План-факт по холдингам · группировка по элементам списка «Холдинги»</div>
+      <div class="subtitle">План-факт по холдингам · клик по холдингу — разрез по предприятиям</div>
     </div>
     <div class="scope">
       <span class="lbl">Дата формирования</span>
@@ -103,23 +110,26 @@
   </section>
 
 <script>
-  // ---------- Демо-данные (из макета) ----------
+  // ---------- Демо-данные: 4 холдинга, у каждого несколько предприятий ----------
   const HOLDINGS = [
-    {name:"Холдинг 1", f:50000000, b:25000000, plan:17500000, work:19230769, z:9615384},
-    {name:"Холдинг 2", f:24000000, b:4000000, plan:2800000, work:5200000, z:1300000},
-    {name:"Холдинг 3", f:200000000, b:133333333, plan:93333333, work:95238095, z:13605442},
-    {name:"Холдинг 4", f:1000000, b:1000000, plan:700000, work:769231, z:384615},
-    {name:"Холдинг 5", f:65000000, b:81250000, plan:56875000, work:105625000, z:26406250},
-    {name:"Холдинг 6", f:800000000, b:421052632, plan:294736842, work:300751880, z:42964554},
-    {name:"Холдинг 7", f:1000000000, b:500000000, plan:350000000, work:384615385, z:192307692},
-    {name:"Холдинг 8", f:789000000, b:131500000, plan:92050000, work:170950000, z:42737500},
-    {name:"Холдинг 9", f:7000000, b:4666667, plan:3266667, work:3333333, z:476190},
-    {name:"Холдинг 10", f:79000000, b:79000000, plan:55300000, work:60769231, z:30384615},
-    {name:"Холдинг 11", f:120000000, b:150000000, plan:105000000, work:195000000, z:48750000},
-    {name:"Холдинг 12", f:654000000, b:344210526, plan:240947368, work:245864662, z:35123523},
-    {name:"Холдинг 13", f:45000000, b:22500000, plan:15750000, work:17307692, z:8653846},
-    {name:"Холдинг 14", f:2000000, b:333333, plan:233333, work:433333, z:108333},
-    {name:"Холдинг 15", f:37000000, b:24666667, plan:17266667, work:17619048, z:2517007}
+    {name:"Холдинг 1", companies:[
+      {name:"Предприятие 1.1", f:20000000, b:10000000, plan:7000000, work:7692308, z:3846154},
+      {name:"Предприятие 1.2", f:18000000, b:9000000, plan:6300000, work:6923077, z:3461538},
+      {name:"Предприятие 1.3", f:12000000, b:6000000, plan:4200000, work:4615385, z:2307692}
+    ]},
+    {name:"Холдинг 2", companies:[
+      {name:"Предприятие 2.1", f:15000000, b:3000000, plan:2100000, work:3900000, z:975000},
+      {name:"Предприятие 2.2", f:9000000, b:1000000, plan:700000, work:1300000, z:325000}
+    ]},
+    {name:"Холдинг 3", companies:[
+      {name:"Предприятие 3.1", f:80000000, b:53333333, plan:37333333, work:38095238, z:5442177},
+      {name:"Предприятие 3.2", f:70000000, b:46666667, plan:32666667, work:33333333, z:4761905},
+      {name:"Предприятие 3.3", f:50000000, b:33333333, plan:23333333, work:23809524, z:3401361}
+    ]},
+    {name:"Холдинг 4", companies:[
+      {name:"Предприятие 4.1", f:40000000, b:20000000, plan:14000000, work:15384615, z:7692308},
+      {name:"Предприятие 4.2", f:30000000, b:15000000, plan:10500000, work:11538462, z:5769231}
+    ]}
   ];
 
   const $thead=document.getElementById("thead");
@@ -141,34 +151,41 @@
   function money(n){return fmt(Math.round(n))+" ₽";}
   function pct(n){return (n*100).toFixed(1).replace(".",",")+"%";}
 
+  function cells(c){
+    return `<td class="money">${money(c.f)}</td><td class="money">${money(c.b)}</td><td class="money">${money(c.plan)}</td><td class="money">${money(c.work)}</td><td class="money">${money(c.z)}</td><td class="pct">${pct(c.z/c.plan)}</td><td class="pct">${pct(c.b/c.work)}</td>`;
+  }
+
   function render(){
     $scope.textContent=new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
-    $thead.innerHTML=`<tr><th class="rowhead">Холдинг</th>${HEADERS.map(h=>`<th>${h.t}<span class="src">${h.src}</span></th>`).join("")}</tr>`;
+    $thead.innerHTML=`<tr><th class="rowhead">Холдинг / Предприятие</th>${HEADERS.map(h=>`<th>${h.t}<span class="src">${h.src}</span></th>`).join("")}</tr>`;
 
     let rows="";
     let gF=0,gB=0,gPlan=0,gWork=0,gZ=0;
-    HOLDINGS.forEach(h=>{
-      const pctPlan=h.z/h.plan;
-      const pctMarket=h.b/h.work;
-      gF+=h.f;gB+=h.b;gPlan+=h.plan;gWork+=h.work;gZ+=h.z;
-      rows+=`<tr><td class="rowhead">${h.name}</td>
-        <td class="money">${money(h.f)}</td>
-        <td class="money">${money(h.b)}</td>
-        <td class="money">${money(h.plan)}</td>
-        <td class="money">${money(h.work)}</td>
-        <td class="money">${money(h.z)}</td>
-        <td class="pct">${pct(pctPlan)}</td>
-        <td class="pct">${pct(pctMarket)}</td></tr>`;
-    });
-    const gPctPlan=gZ/gPlan;
-    const gPctMarket=gB/gWork;
-    rows+=`<tr class="grand"><td class="rowhead">Общий итог</td>
-      <td>${money(gF)}</td><td>${money(gB)}</td><td>${money(gPlan)}</td>
-      <td>${money(gWork)}</td><td>${money(gZ)}</td>
-      <td>${pct(gPctPlan)}</td><td>${pct(gPctMarket)}</td></tr>`;
 
+    HOLDINGS.forEach((h,hi)=>{
+      let sF=0,sB=0,sPlan=0,sWork=0,sZ=0;
+      h.companies.forEach(c=>{sF+=c.f;sB+=c.b;sPlan+=c.plan;sWork+=c.work;sZ+=c.z;});
+      gF+=sF;gB+=sB;gPlan+=sPlan;gWork+=sWork;gZ+=sZ;
+
+      rows+=`<tr class="holder" data-holder="${hi}"><td class="rowhead"><span class="caret">▶</span>${h.name}</td>${cells({f:sF,b:sB,plan:sPlan,work:sWork,z:sZ})}</tr>`;
+      h.companies.forEach(c=>{
+        rows+=`<tr class="company hidden" data-holder="${hi}"><td class="rowhead">${c.name}</td>${cells(c)}</tr>`;
+      });
+    });
+
+    rows+=`<tr class="grand"><td class="rowhead">Общий итог</td>${cells({f:gF,b:gB,plan:gPlan,work:gWork,z:gZ})}</tr>`;
     $tbody.innerHTML=rows;
-    $foot.textContent=`${HOLDINGS.length} холдингов`;
+
+    // клик по холдингу — развернуть/свернуть предприятия
+    $tbody.querySelectorAll("tr.holder").forEach(tr=>{
+      tr.addEventListener("click",()=>{
+        const hi=tr.dataset.holder;
+        tr.classList.toggle("open");
+        $tbody.querySelectorAll(`tr.company[data-holder="${hi}"]`).forEach(c=>c.classList.toggle("hidden"));
+      });
+    });
+
+    $foot.textContent=`${HOLDINGS.length} холдинга · клик по названию — разрез по предприятиям`;
   }
 
   render();
