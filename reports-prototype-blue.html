@@ -1,0 +1,726 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Отчёты по сделкам НИЦ ТСО</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+<style>
+/* Макет: интерфейс коробки Битрикс24 - фоновая тема, левое меню, белая рабочая область, слайдер справа */
+:root{
+  color-scheme: light;
+  --theme-a:#0b6fa8; --theme-b:#2fb3d6;
+  --menu-fg:#ffffff; --menu-fg-dim:rgba(255,255,255,.72); --menu-active:rgba(255,255,255,.22);
+  --work:#ffffff; --bg-soft:#f5f7f8; --line:#e6e9ec; --line-strong:#d5dade;
+  --fg:#333333; --fg-2:#535c69; --muted:#a1a6ac;
+  --b24-blue:#3bc8f5; --b24-blue-d:#12b1e3; --b24-link:#2067b0; --b24-green:#bbed21;
+  --ok:#7bd500; --warn:#ffa900; --bad:#ff5752;
+  --font:"Open Sans","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--font);font-size:13px;color:var(--fg);
+  background:linear-gradient(135deg,var(--theme-a) 0%,var(--theme-b) 100%) fixed;}
+a{color:var(--b24-link);text-decoration:none}
+button{font-family:inherit}
+.app{display:flex;min-height:100%}
+
+/* Левое меню */
+.menu{width:236px;flex:none;padding:14px 10px 30px;color:var(--menu-fg)}
+.logo{display:flex;align-items:center;gap:6px;padding:4px 12px 18px;font-weight:700;font-size:22px;letter-spacing:-.3px}
+.logo b{color:#fff}.logo span{color:#bfefff}
+.logo i{font-style:normal;font-size:11px;font-weight:600;background:rgba(255,255,255,.2);border-radius:3px;padding:1px 5px;margin-left:4px}
+.menu-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:17px;color:var(--menu-fg-dim);cursor:pointer;font-size:14px;white-space:nowrap;border:0;background:none;width:100%;text-align:left}
+.menu-item:hover{color:#fff;background:rgba(255,255,255,.1)}
+.menu-item.on{color:#fff;background:var(--menu-active);font-weight:600}
+.menu-item:focus-visible{outline:2px solid #fff}
+.menu-ico{width:18px;height:18px;flex:none;border-radius:4px;background:rgba(255,255,255,.28)}
+.menu-group{margin:14px 0 4px;padding:0 12px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.6)}
+.menu-sub .menu-item{padding-left:40px;font-size:13px}
+.menu-sep{height:1px;background:rgba(255,255,255,.18);margin:12px 12px}
+
+/* Шапка */
+.main{flex:1;min-width:0;padding:0 18px 30px 6px}
+.top{display:flex;align-items:center;gap:14px;height:64px;color:#fff}
+.search{flex:1;max-width:460px;height:34px;border-radius:17px;background:rgba(255,255,255,.18);border:0;color:#fff;padding:0 16px;font:inherit}
+.search::placeholder{color:rgba(255,255,255,.75)}
+.top-time{font-size:24px;font-weight:300;margin-left:auto}
+.role-switch{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.18);border-radius:17px;padding:4px 6px 4px 12px}
+.role-switch label{font-size:12px;color:rgba(255,255,255,.85)}
+.role-switch select{height:26px;border-radius:13px;border:0;padding:0 10px;font:inherit;font-size:12px;color:var(--fg);background:#fff;max-width:260px}
+.avatar{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--theme-a);display:grid;place-items:center;font-weight:700;flex:none}
+
+.page-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 14px}
+.page-title{font-size:26px;font-weight:400;color:#fff;margin:0;text-wrap:balance}
+.demo-badge{font-size:11px;font-weight:600;color:#fff;background:rgba(0,0,0,.22);padding:3px 9px;border-radius:10px}
+
+/* Рабочая область */
+.work{background:var(--work);border-radius:12px;padding:18px 20px 22px;min-width:0}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:-4px -4px 16px;padding:0 4px}
+.tab{border:0;background:none;padding:10px 14px;font-size:14px;color:var(--fg-2);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab.on{color:var(--fg);border-bottom-color:var(--b24-blue);font-weight:600}
+
+/* Фильтр */
+.filter{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;background:var(--bg-soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:16px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f>span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.f select,.f .ms-btn{height:34px;border:1px solid var(--line-strong);border-radius:4px;background:#fff;font:inherit;color:var(--fg);padding:0 10px;min-width:150px;max-width:280px}
+.f select:focus,.f .ms-btn:focus{outline:2px solid var(--b24-blue);outline-offset:0}
+.f .fixed{height:34px;display:flex;align-items:center;padding:0 10px;border-radius:4px;background:#eef2f4;color:var(--fg-2)}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:4px;overflow:hidden;height:34px}
+.seg button{border:0;background:#fff;padding:0 14px;cursor:pointer;color:var(--fg-2);font-size:13px}
+.seg button+button{border-left:1px solid var(--line-strong)}
+.seg button.on{background:var(--b24-blue);color:#fff;font-weight:600}
+.f-note{font-size:12px;color:var(--fg-2);margin-left:auto;align-self:center}
+
+/* Мультиселект */
+.ms{position:relative}
+.ms-btn{text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:220px}
+.ms-btn::after{content:"";position:absolute;right:12px;top:15px;border:4px solid transparent;border-top-color:var(--fg-2)}
+.ms-pop{position:absolute;z-index:20;top:38px;left:0;min-width:240px;max-height:300px;overflow:auto;background:#fff;border:1px solid var(--line-strong);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:6px 0}
+.ms-pop label{display:flex;gap:8px;align-items:center;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.ms-pop label:hover{background:var(--bg-soft)}
+.ms-pop .ms-all{border-bottom:1px solid var(--line);margin-bottom:4px;font-weight:600}
+
+/* Таблицы (main.ui.grid) */
+.grid-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table.grid{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.grid th{background:#fff;color:var(--fg-2);font-weight:600;font-size:12px;text-align:left;padding:10px 12px;border-bottom:2px solid var(--line);white-space:nowrap;vertical-align:bottom}
+.grid td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.grid tbody tr:hover td{background:#f6f9fa}
+.grid td:first-child,.grid th:first-child{min-width:200px}
+.grid .num{text-align:right;white-space:nowrap}
+.grid th.num{text-align:right}
+.grid tr.total td{background:#eef6fb;font-weight:700;border-top:2px solid var(--line-strong)}
+.grid tr.group td{background:#f8fafb;font-weight:600}
+.grid tr.child td:first-child{padding-left:32px;color:var(--fg-2)}
+.cell{display:block;cursor:pointer;border-radius:4px;padding:2px 4px;margin:-2px -4px}
+.cell:hover{background:#e3f5fd}
+.cell b{display:block;font-size:14px}
+.cell small{color:var(--fg-2);font-size:12px}
+.cell.zero{cursor:default;color:var(--muted)}
+.cell.zero:hover{background:none}
+.sub{display:block;color:var(--muted);font-size:11px;font-weight:400}
+.pct{display:inline-block;min-width:52px;text-align:center;border-radius:10px;padding:1px 8px;font-weight:600;font-size:12px}
+.pct.ok{background:#eaf9d6;color:#4a8a00}.pct.mid{background:#fff3d6;color:#a86d00}.pct.low{background:#ffe5e4;color:#c4302b}
+.toggle{border:0;background:none;cursor:pointer;color:var(--b24-link);font:inherit;font-weight:600;padding:0;display:inline-flex;gap:6px;align-items:center}
+.toggle i{font-style:normal;display:inline-block;width:14px;transition:transform .15s}
+.toggle[aria-expanded="true"] i{transform:rotate(90deg)}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:12px;color:var(--fg-2)}
+.legend b{color:var(--fg)}
+.note{margin-top:14px;font-size:12px;color:var(--fg-2);line-height:1.5;max-width:900px}
+.note mark{background:#fff3d6;padding:0 3px;border-radius:2px}
+
+/* Нет доступа */
+.empty{padding:60px 20px;text-align:center;color:var(--fg-2)}
+.empty h3{color:var(--fg);font-weight:600;margin:0 0 6px}
+
+/* Слайдер */
+.slider-back{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50}
+.slider{position:fixed;top:0;right:0;bottom:0;width:min(860px,94vw);background:#eef2f4;z-index:51;display:flex;flex-direction:column;box-shadow:-6px 0 24px rgba(0,0,0,.2);padding-top:env(safe-area-inset-top,0px)}
+.slider-close{position:absolute;left:-46px;top:16px;width:38px;height:38px;border-radius:19px 0 0 19px;border:0;background:#535c69;color:#fff;font-size:20px;cursor:pointer}
+.slider-head{padding:20px 24px 10px}
+.slider-head h2{margin:0;font-weight:400;font-size:22px}
+.slider-head p{margin:4px 0 0;color:var(--fg-2)}
+.slider-body{flex:1;overflow:auto;padding:0 24px 24px}
+.slider-body .grid-wrap{background:#fff}
+
+@media (max-width:900px){
+  .app{flex-direction:column}
+  .menu{width:auto;display:flex;gap:4px;overflow-x:auto;padding:10px 16px;align-items:center}
+  .menu .logo{padding:0 10px 0 0;font-size:18px}
+  .menu-group,.menu-sep,.menu-ico,.menu-hide-m{display:none}
+  .menu-sub{display:contents}
+  .menu-sub .menu-item,.menu-item{padding:6px 12px;width:auto;font-size:13px}
+  .main{padding:0 16px 24px}
+  .top{height:auto;flex-wrap:wrap;padding:6px 0}
+  .search,.top-time{display:none}
+  .role-switch{flex:1}
+  .work{padding:14px}
+  .slider-close{left:auto;right:10px;top:10px;border-radius:19px;z-index:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <nav class="menu" id="menu" aria-label="Главное меню"></nav>
+  <div class="main">
+    <header class="top">
+      <input class="search" placeholder="искать сотрудника, документ, прочее..." aria-label="Поиск" id="q">
+      <div class="role-switch">
+        <label for="role">Смотреть как</label>
+        <select id="role"></select>
+      </div>
+      <div class="top-time" id="clock">13:45</div>
+      <div class="avatar" id="avatar">ПА</div>
+    </header>
+    <div class="page-head">
+      <h1 class="page-title" id="title">Отчёты по сделкам</h1>
+      <span class="demo-badge">Прототип · демо-данные</span>
+    </div>
+    <main class="work" id="work"></main>
+  </div>
+</div>
+<div id="sliderRoot"></div>
+
+<script>
+/* ---------- Демо-данные (детерминированные) ---------- */
+let seed = 20261013;
+const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+const pick = a => a[Math.floor(rnd() * a.length)];
+const between = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+
+const TODAY = new Date(2026, 9, 13);
+const YEAR = 2026;
+const day = 864e5;
+const addDays = (d, n) => new Date(d.getTime() + n * day);
+const fmtD = d => d.toLocaleDateString('ru-RU');
+
+const VSTAGES = ['Подготовка КП', 'Согласование договора', 'Подписание', 'Заключено', 'Передано в работу'];
+
+const FUNNELS = [
+  {id: 'eq',  name: 'Продажа оборудования', stages: [['Новая заявка',0],['Подготовка КП',0],['Согласование договора',1],['Подписание',2],['Договор заключён',3],['Передано в производство',4]]},
+  {id: 'prj', name: 'Проектные работы', stages: [['Квалификация',0],['Расчёт и КП',0],['Согласование условий',1],['Юридическая экспертиза',1],['Подписание',2],['Заключено',3],['Передано в работу',4]]},
+  {id: 'srv', name: 'Сервисные контракты', stages: [['Запрос',0],['КП отправлено',0],['Согласование',1],['Подписание сторонами',2],['Действующий договор',3],['Передано в сервис',4]]},
+  {id: 'gov', name: 'Госзакупки', stages: [['Анализ закупки',0],['Подготовка заявки',0],['Согласование контракта',1],['Подписание контракта',2],['Контракт заключён',3],['Исполнение',4]]},
+  {id: 'to',  name: 'Техническое обслуживание', stages: [['Обращение',0],['Коммерческое предложение',0],['Согласование договора',1],['Подписание',2],['Заключено',3],['Передано в работу',4]]},
+];
+const funnelById = Object.fromEntries(FUNNELS.map(f => [f.id, f]));
+
+const DEPTS = ['Отдел продаж оборудования', 'Отдел проектных продаж', 'Отдел госзаказа'];
+const EMPLOYEES = [
+  {id: 1, name: 'Петров Алексей', short: 'ПА', dept: 0},
+  {id: 2, name: 'Соколова Мария', short: 'СМ', dept: 0},
+  {id: 3, name: 'Иванов Дмитрий', short: 'ИД', dept: 0},
+  {id: 4, name: 'Кузнецова Елена', short: 'КЕ', dept: 1},
+  {id: 5, name: 'Морозов Сергей', short: 'МС', dept: 1},
+  {id: 6, name: 'Волкова Анна', short: 'ВА', dept: 2},
+  {id: 7, name: 'Лебедев Павел', short: 'ЛП', dept: 2},
+  {id: 8, name: 'Новикова Ольга', short: 'НО', dept: 2},
+];
+const empById = Object.fromEntries(EMPLOYEES.map(e => [e.id, e]));
+
+const HOLDINGS = [
+  {id: 1, name: 'Холдинг «Северный альянс»'},
+  {id: 2, name: 'Холдинг «Техносфера»'},
+  {id: 3, name: 'Холдинг «Энергосистемы»'},
+  {id: 4, name: 'Холдинг «Промресурс»'},
+  {id: 5, name: 'Холдинг «Транспортные решения»'},
+];
+const COMPANY_NAMES = [
+  ['АО «Северный машзавод»',1],['ООО «Балтика-Сервис»',1],['АО «Полярные системы»',1],
+  ['АО «Техносфера-Урал»',2],['ООО «Техносфера-Инжиниринг»',2],['АО «Приборный завод №3»',2],
+  ['АО «Энергосети Поволжья»',3],['ООО «ТеплоЭнергоМонтаж»',3],['АО «Генерирующая компания-7»',3],
+  ['АО «Промресурс-Логистик»',4],['ООО «Металлоконструкции»',4],
+  ['АО «Магистраль»',5],['ООО «ТрансКонтроль»',5],['АО «Аэропортовые системы»',5],['ООО «Вагонный сервис»',5],
+];
+const COMPANIES = COMPANY_NAMES.map(([name, h], i) => ({
+  id: i + 1, name, holding: h, resp: EMPLOYEES[(i * 3 + h) % EMPLOYEES.length].id,
+}));
+const compById = Object.fromEntries(COMPANIES.map(c => [c.id, c]));
+
+// СП «Планируемые бюджеты»: ФПС и плановый бюджет по предприятию на год
+const BUDGETS = {};
+for (const y of [2025, 2026, 2027]) {
+  BUDGETS[y] = {};
+  for (const c of COMPANIES) {
+    const fps = between(18, 140) * 1e6;
+    BUDGETS[y][c.id] = {fps, budget: Math.round(fps * (0.7 + rnd() * 0.5) / 1e5) * 1e5};
+  }
+}
+
+const SUBJECTS = ['Поставка оборудования', 'Модернизация системы', 'Пусконаладка', 'Проектирование', 'Сервисный договор', 'Комплекс ТСО', 'Монтаж и настройка', 'Техобслуживание'];
+const DEALS = [];
+for (let i = 1; i <= 260; i++) {
+  const f = pick(FUNNELS);
+  const comp = pick(COMPANIES);
+  const resp = rnd() < 0.8 ? comp.resp : pick(EMPLOYEES).id;
+  const created = addDays(new Date(YEAR, 0, 9), between(0, 270));
+  if (created > TODAY) continue;
+  const targetV = [0,0,0,1,1,2,2,3,3,3,4,4][between(0, 11)];
+  const candidates = f.stages.map((s, k) => [s, k]).filter(([s]) => s[1] === targetV);
+  const lastIdx = pick(candidates)[1];
+  const history = [];
+  let d = created;
+  for (let k = 0; k <= lastIdx; k++) {
+    if (k > 0) d = addDays(d, between(4, 28));
+    if (d > TODAY) break;
+    history.push({date: d, stage: k});
+  }
+  const amount = between(8, 260) * 1e5;
+  const curStage = history[history.length - 1].stage;
+  const curV = f.stages[curStage][1];
+  const signedEntry = history.find(h => f.stages[h.stage][1] >= 3);
+  const deal = {
+    id: 1000 + i, title: `${pick(SUBJECTS)} · ${comp.name.replace(/^(АО|ООО) /, '')}`,
+    funnel: f.id, company: comp.id, resp, amount, created, history,
+    signed: !!signedEntry, contractDate: signedEntry ? signedEntry.date : null,
+    plannedClose: addDays(created, between(45, 210)),
+    probability: [20, 40, 60, 100, 100][curV],
+  };
+  if (deal.signed) {
+    deal.advanceReceived = rnd() < 0.72;
+    deal.advanceSum = Math.round(amount * 0.3);
+    const ad = addDays(deal.contractDate, between(5, 35));
+    deal.advanceDate = ad <= TODAY ? ad : null;
+    if (!deal.advanceDate) deal.advanceReceived = false;
+    deal.surcharge = amount - (deal.advanceReceived ? deal.advanceSum : 0);
+  }
+  DEALS.push(deal);
+}
+
+/* ---------- Расчёты ---------- */
+const money = n => new Intl.NumberFormat('ru-RU', {maximumFractionDigits: 0}).format(Math.round(n)) + ' ₽';
+const pctClass = p => p >= 100 ? 'ok' : p >= 70 ? 'mid' : 'low';
+const pct = (a, b) => b ? a / b * 100 : null;
+const pctHtml = p => p === null ? '<span class="sub">-</span>' : `<span class="pct ${pctClass(p)}">${p.toFixed(0)}%</span>`;
+
+// Реальная стадия сделки на дату среза по истории изменений
+function stageAt(deal, date) {
+  if (deal.created > date || deal.created.getFullYear() !== YEAR) return null;
+  let s = null;
+  for (const h of deal.history) if (h.date <= date) s = h.stage;
+  return s;
+}
+const vstageAt = (deal, date) => {
+  const s = stageAt(deal, date);
+  return s === null ? null : funnelById[deal.funnel].stages[s][1];
+};
+
+// Недели текущего года: понедельник - воскресенье, срез на пятницу
+function weeksOfYear() {
+  const res = [];
+  let mon = new Date(YEAR, 0, 1);
+  while (mon.getDay() !== 1) mon = addDays(mon, 1);
+  let n = 1;
+  while (mon <= TODAY) {
+    res.push({n, mon, fri: addDays(mon, 4), sun: addDays(mon, 6)});
+    mon = addDays(mon, 7); n++;
+  }
+  return res;
+}
+const WEEKS = weeksOfYear();
+const CUR_WEEK = WEEKS[WEEKS.length - 1];
+const weekLabel = w => `Неделя ${w.n}: ${fmtD(w.mon)} - ${fmtD(w.sun)}`;
+
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+function periods(mode) {
+  if (mode === 'month') {
+    const m = TODAY.getMonth();
+    return [{label: `${MONTHS[m]} ${YEAR}`, from: new Date(YEAR, m, 1), to: new Date(YEAR, m + 1, 0, 23, 59)}];
+  }
+  return [0,1,2,3].map(q => ({label: `${q + 1} кв. ${YEAR}`, from: new Date(YEAR, q * 3, 1), to: new Date(YEAR, q * 3 + 3, 0, 23, 59)}));
+}
+const inP = (d, p) => d && d >= p.from && d <= p.to;
+const METRICS = [
+  {key: 'signed',  label: 'Заключено на сумму', sub: 'по «Дате заключения договора»',
+    test: (d, p) => d.signed && inP(d.contractDate, p), val: d => d.amount},
+  {key: 'advance', label: 'Планируемое поступление авансов', sub: 'по «Дате получения аванса»',
+    test: (d, p) => d.advanceReceived && inP(d.advanceDate, p), val: d => d.advanceSum},
+  {key: 'close',   label: 'Планируемое закрытие сделок', sub: 'по плановой дате закрытия',
+    test: (d, p) => inP(d.plannedClose, p), val: d => d.amount},
+  {key: 'final',   label: 'Поступление окончательных расчётов', sub: 'по «Дате заключения договора» *',
+    test: (d, p) => d.signed && inP(d.contractDate, p), val: d => d.surcharge},
+];
+
+/* ---------- Роли и меню ---------- */
+const USERS = [
+  {id: 'u1', emp: 1, label: 'Петров А. - роль «Сотрудники»', roles: ['staff'], short: 'ПА'},
+  {id: 'u2', emp: null, label: 'Смирнов А. (ГД) - роль «Руководство»', roles: ['mgmt'], short: 'СА'},
+  {id: 'u3', emp: 4, label: 'Кузнецова Е. - обе роли', roles: ['staff', 'mgmt'], short: 'КЕ'},
+  {id: 'u4', emp: 7, label: 'Лебедев П. - без ролей', roles: [], short: 'ЛП'},
+];
+const REPORTS = [
+  {id: 'weekly',    group: 'staff', title: 'Еженедельный'},
+  {id: 'monthly',   group: 'staff', title: 'Месячный / Квартальный'},
+  {id: 'rks',       group: 'staff', title: 'РКС · план-факт'},
+  {id: 'mweekly',   group: 'mgmt',  title: 'Еженедельный'},
+  {id: 'mmonthly',  group: 'mgmt',  title: 'Месячный / Квартальный'},
+  {id: 'summary',   group: 'mgmt',  title: 'Сводный (по холдингам)'},
+];
+const GROUPS = {staff: 'Сотрудникам', mgmt: 'Руководству'};
+
+const state = {
+  user: 'u1', report: null,
+  weekly: {emp: 1, week: CUR_WEEK.n},
+  monthly: {mode: 'quarter'},
+  rks: {year: YEAR, emps: EMPLOYEES.map(e => e.id)},
+  mweekly: {week: 0, depts: DEPTS.map((_, i) => i), emps: null, funnels: FUNNELS.map(f => f.id)},
+  mmonthly: {mode: 'quarter', depts: DEPTS.map((_, i) => i)},
+  summary: {open: new Set()},
+};
+const user = () => USERS.find(u => u.id === state.user);
+const allowed = r => user().roles.includes(r.group);
+
+function renderMenu() {
+  const u = user();
+  const items = REPORTS.filter(allowed);
+  let html = `<div class="logo"><b>Битрикс</b><span>24</span><i>коробка</i></div>
+    <button class="menu-item menu-hide-m"><span class="menu-ico"></span>Задачи и проекты</button>
+    <button class="menu-item menu-hide-m"><span class="menu-ico"></span>CRM</button>`;
+  for (const g of ['staff', 'mgmt']) {
+    const gi = items.filter(r => r.group === g);
+    if (!gi.length) continue;
+    html += `<div class="menu-group">Отчёты · ${GROUPS[g]}</div><div class="menu-sub">`;
+    for (const r of gi) html += `<button class="menu-item ${state.report === r.id ? 'on' : ''}" data-go="${r.id}">${r.title}</button>`;
+    html += `</div>`;
+  }
+  html += `<div class="menu-sep"></div>
+    <button class="menu-item ${state.report === 'roles' ? 'on' : ''}" data-go="roles"><span class="menu-ico"></span>Роли отчётов</button>
+    <button class="menu-item ${state.report === 'map' ? 'on' : ''}" data-go="map"><span class="menu-ico"></span>Справочник стадий</button>`;
+  document.getElementById('menu').innerHTML = html;
+  document.getElementById('avatar').textContent = u.short;
+}
+
+/* ---------- Компоненты фильтра ---------- */
+let msOpen = null;
+function multiselect(id, label, options, selected) {
+  const sel = new Set(selected);
+  const txt = sel.size === options.length ? 'Все' : sel.size === 0 ? 'Не выбрано' : options.filter(o => sel.has(o.v)).map(o => o.t).join(', ');
+  return `<div class="f"><span>${label}</span><div class="ms">
+    <button class="ms-btn" data-ms="${id}" id="ms-${id}" aria-expanded="${msOpen === id}">${txt}</button>
+    ${msOpen === id ? `<div class="ms-pop">
+      <label class="ms-all"><input type="checkbox" data-ms-all="${id}" ${sel.size === options.length ? 'checked' : ''}> Все</label>
+      ${options.map(o => `<label><input type="checkbox" data-ms-opt="${id}" value="${o.v}" ${sel.has(o.v) ? 'checked' : ''}> ${o.t}</label>`).join('')}
+    </div>` : ''}
+  </div></div>`;
+}
+const seg = (key, val, opts) => `<div class="seg" role="group">${opts.map(([v, t]) => `<button data-seg="${key}" data-v="${v}" class="${val === v ? 'on' : ''}">${t}</button>`).join('')}</div>`;
+
+/* ---------- Слайдер со сделками ---------- */
+let sliderDeals = null;
+function openSlider(title, subtitle, deals, date) {
+  sliderDeals = {title, subtitle, deals, date};
+  renderSlider();
+}
+function renderSlider() {
+  const root = document.getElementById('sliderRoot');
+  if (!sliderDeals) { root.innerHTML = ''; return; }
+  const {title, subtitle, deals, date} = sliderDeals;
+  const rows = deals.map(d => {
+    const f = funnelById[d.funnel];
+    const s = date ? stageAt(d, date) : d.history[d.history.length - 1].stage;
+    return `<tr><td><a href="#" onclick="return false">${d.title}</a><span class="sub">№ ${d.id}</span></td>
+      <td>${compById[d.company].name}</td><td>${f.name}<span class="sub">${f.stages[s][0]} → ${VSTAGES[f.stages[s][1]]}</span></td>
+      <td>${empById[d.resp].name}</td><td class="num">${money(d.amount)}</td></tr>`;
+  }).join('');
+  const sum = deals.reduce((a, d) => a + d.amount, 0);
+  root.innerHTML = `<div class="slider-back" data-close></div>
+    <aside class="slider" role="dialog" aria-label="${title}">
+      <button class="slider-close" data-close aria-label="Закрыть">×</button>
+      <div class="slider-head"><h2>${title}</h2><p>${subtitle} · ${deals.length} сделок на ${money(sum)}</p></div>
+      <div class="slider-body"><div class="grid-wrap"><table class="grid">
+        <thead><tr><th>Сделка</th><th>Компания</th><th>Воронка и стадия${date ? ' на срез' : ''}</th><th>Ответственный</th><th class="num">Сумма</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="5">Сделок нет</td></tr>'}</tbody></table></div></div>
+    </aside>`;
+}
+
+let cellStore = [];
+function cell(deals, title, subtitle, date) {
+  const n = deals.length;
+  if (!n) return `<span class="cell zero"><b>0</b><small>-</small></span>`;
+  const idx = cellStore.push({deals, title, subtitle, date}) - 1;
+  const s = deals.reduce((a, d) => a + d.amount, 0);
+  return `<span class="cell" role="button" tabindex="0" data-cell="${idx}"><b>${n}</b><small>${money(s)}</small></span>`;
+}
+function sumCell(deals, val, title, subtitle) {
+  const s = deals.reduce((a, d) => a + val(d), 0);
+  if (!deals.length) return `<span class="sub">0 ₽</span>`;
+  const idx = cellStore.push({deals, title, subtitle, date: null}) - 1;
+  return `<span class="cell" role="button" tabindex="0" data-cell="${idx}" style="display:inline-block">${money(s)}<span class="sub">${deals.length} сд.</span></span>`;
+}
+
+/* ---------- Отчёты ---------- */
+function rWeekly() {
+  const st = state.weekly;
+  const u = user();
+  const w = WEEKS.find(x => x.n === st.week);
+  const deals = DEALS.filter(d => d.resp === st.emp && vstageAt(d, w.fri) !== null);
+  const funnels = FUNNELS.filter(f => deals.some(d => d.funnel === f.id));
+  const emp = empById[st.emp];
+  const cutoff = `срез на ${fmtD(w.fri)}`;
+  let body = '';
+  for (const f of funnels) {
+    const fd = deals.filter(d => d.funnel === f.id);
+    body += `<tr><td><b>${f.name}</b></td>${VSTAGES.map((v, i) => `<td>${cell(fd.filter(d => vstageAt(d, w.fri) === i), `${f.name} · ${v}`, `${emp.name} · ${cutoff}`, w.fri)}</td>`).join('')}
+      <td>${cell(fd, f.name, `${emp.name} · ${cutoff}`, w.fri)}</td></tr>`;
+  }
+  body += `<tr class="total"><td>Итого</td>${VSTAGES.map((v, i) => `<td>${cell(deals.filter(d => vstageAt(d, w.fri) === i), v, `${emp.name} · ${cutoff}`, w.fri)}</td>`).join('')}
+    <td>${cell(deals, 'Все сделки', `${emp.name} · ${cutoff}`, w.fri)}</td></tr>`;
+  const empOpts = EMPLOYEES.map(e => `<option value="${e.id}" ${e.id === st.emp ? 'selected' : ''}>${e.name}</option>`).join('');
+  const weekOpts = [...WEEKS].reverse().map(x => `<option value="${x.n}" ${x.n === st.week ? 'selected' : ''}>${x.n === CUR_WEEK.n ? 'Текущая · ' : x.n === CUR_WEEK.n - 1 ? 'Предыдущая · ' : ''}${weekLabel(x)}</option>`).join('');
+  return `<div class="filter">
+      <label class="f"><span>Сотрудник</span><select data-set="weekly.emp" id="f-w-emp">${empOpts}</select></label>
+      <label class="f"><span>Неделя</span><select data-set="weekly.week" id="f-w-week">${weekOpts}</select></label>
+      <div class="f"><span>Год</span><div class="fixed">${YEAR}</div></div>
+      <div class="f"><span>Точка среза</span><div class="fixed">пятница, ${fmtD(w.fri)}</div></div>
+    </div>
+    <div class="grid-wrap"><table class="grid">
+      <thead><tr><th>Воронка</th>${VSTAGES.map((v, i) => `<th>${v}${i === 4 ? '<span class="sub">финальная</span>' : ''}</th>`).join('')}<th>Итого</th></tr></thead>
+      <tbody>${funnels.length ? body : `<tr><td colspan="7">У сотрудника нет сделок на дату среза</td></tr>`}</tbody>
+    </table></div>
+    <div class="legend"><span><b>Число</b> - количество сделок</span><span><b>Сумма</b> - поле «Сумма» сделок в ячейке</span><span>Нажмите на ячейку, чтобы открыть список сделок</span></div>
+    <p class="note">Снимок на пятницу выбранной недели: сделка попадает в ту стадию, в которой находилась на дату среза по истории изменений стадий. Включены открытые и закрытые сделки текущего года. Реальные стадии воронок сведены к виртуальным по справочнику соответствия.</p>`;
+}
+
+function periodTable(deals, mode, who) {
+  const ps = periods(mode);
+  const rows = ps.map(p => `<tr><td><b>${p.label}</b></td>${METRICS.map(m => {
+    const md = deals.filter(d => m.test(d, p));
+    return `<td class="num">${sumCell(md, m.val, `${m.label} · ${p.label}`, who)}</td>`;
+  }).join('')}</tr>`).join('');
+  const all = {from: ps[0].from, to: ps[ps.length - 1].to};
+  const total = `<tr class="total"><td>Итого</td>${METRICS.map(m => {
+    const md = deals.filter(d => m.test(d, all));
+    return `<td class="num">${sumCell(md, m.val, `${m.label} · итого`, who)}</td>`;
+  }).join('')}</tr>`;
+  return `<div class="grid-wrap"><table class="grid">
+    <thead><tr><th>Период</th>${METRICS.map(m => `<th class="num">${m.label}<span class="sub">${m.sub}</span></th>`).join('')}</tr></thead>
+    <tbody>${rows}${total}</tbody></table></div>
+    <p class="note">Валюта RUB, суммы без разбивки на валюты. <mark>* Опорная дата для «Поступления окончательных расчётов» уточняется</mark>, в прототипе - «Дата заключения договора».</p>`;
+}
+
+function rMonthly() {
+  const u = user();
+  const emp = u.emp ? empById[u.emp] : null;
+  if (!emp) return `<div class="empty"><h3>Отчёт строится по текущему сотруднику</h3>У пользователя «${u.label.split(' - ')[0]}» нет своих сделок. Выберите сотрудника КС в переключателе «Смотреть как».</div>`;
+  const deals = DEALS.filter(d => d.resp === emp.id);
+  return `<div class="filter">
+      <div class="f"><span>Период</span>${seg('monthly.mode', state.monthly.mode, [['month', 'Месяц'], ['quarter', 'Квартал']])}</div>
+      <div class="f"><span>Сотрудник</span><div class="fixed">${emp.name} (текущий)</div></div>
+      <div class="f"><span>Валюта</span><div class="fixed">RUB</div></div>
+    </div>${periodTable(deals, state.monthly.mode, emp.name)}`;
+}
+
+function rRks() {
+  const st = state.rks;
+  const target = b => b * 0.9;
+  const closedBy = cid => DEALS.filter(d => d.company === cid && d.signed);
+  let body = '', T = {fps: 0, budget: 0, target: 0, signed: 0};
+  for (const e of EMPLOYEES.filter(x => st.emps.includes(x.id))) {
+    const comps = COMPANIES.filter(c => c.resp === e.id);
+    if (!comps.length) continue;
+    const rows = comps.map(c => {
+      const b = BUDGETS[st.year][c.id];
+      const sd = closedBy(c.id);
+      const s = sd.reduce((a, d) => a + d.amount, 0);
+      return {c, b, sd, s};
+    });
+    const E = rows.reduce((a, r) => ({fps: a.fps + r.b.fps, budget: a.budget + r.b.budget, signed: a.signed + r.s}), {fps: 0, budget: 0, signed: 0});
+    E.target = target(E.budget);
+    T.fps += E.fps; T.budget += E.budget; T.target += E.target; T.signed += E.signed;
+    body += `<tr class="group"><td>${e.name}<span class="sub">${DEPTS[e.dept]}</span></td><td class="num">${money(E.fps)}</td><td class="num">${money(E.budget)}</td><td class="num">${money(E.target)}</td>
+      <td class="num">${sumCell(rows.flatMap(r => r.sd), d => d.amount, `Заключено · ${e.name}`, 'Договор заключён = да')}</td><td class="num">${pctHtml(pct(E.signed, E.target))}</td></tr>`;
+    for (const r of rows) {
+      body += `<tr class="child"><td>${r.c.name}</td><td class="num">${money(r.b.fps)}</td><td class="num">${money(r.b.budget)}</td><td class="num">${money(target(r.b.budget))}</td>
+        <td class="num">${sumCell(r.sd, d => d.amount, `Заключено · ${r.c.name}`, 'Договор заключён = да')}</td><td class="num">${pctHtml(pct(r.s, target(r.b.budget)))}</td></tr>`;
+    }
+  }
+  body += `<tr class="total"><td>Итого</td><td class="num">${money(T.fps)}</td><td class="num">${money(T.budget)}</td><td class="num">${money(T.target)}</td><td class="num">${money(T.signed)}</td><td class="num">${pctHtml(pct(T.signed, T.target))}</td></tr>`;
+  const years = [2025, 2026, 2027].map(y => `<option ${y === st.year ? 'selected' : ''}>${y}</option>`).join('');
+  return `<div class="filter">
+      <label class="f"><span>Отчётный год</span><select data-set="rks.year" id="f-r-year">${years}</select></label>
+      ${multiselect('rks.emps', 'Сотрудники', EMPLOYEES.map(e => ({v: e.id, t: e.name})), st.emps)}
+      <div class="f"><span>Валюта</span><div class="fixed">RUB</div></div>
+      <div class="f"><span>Срез</span><div class="fixed">моментальный, ${fmtD(TODAY)}</div></div>
+    </div>
+    <div class="grid-wrap"><table class="grid">
+      <thead><tr><th>Сотрудник / предприятие</th><th class="num">ФПС</th><th class="num">Планируемый бюджет</th><th class="num">Целевой показатель<span class="sub">бюджет × 0,9</span></th><th class="num">Заключено</th><th class="num">% выполнения<span class="sub">заключено ÷ целевой</span></th></tr></thead>
+      <tbody>${body}</tbody></table></div>
+    <p class="note">Сотрудник - Ответственный по компании. ФПС и Планируемый бюджет - из смарт-процесса «Планируемые бюджеты» по предприятию на отчётный год. Заключено - сумма сделок с «Договор заключён» = да на текущий момент.</p>`;
+}
+
+function rMWeekly() {
+  const st = state.mweekly;
+  const w = WEEKS[WEEKS.length - 1 - st.week];
+  const base = DEALS.filter(d => st.funnels.includes(d.funnel) && vstageAt(d, w.fri) !== null && st.depts.includes(empById[d.resp].dept));
+  const withDeals = EMPLOYEES.filter(e => st.depts.includes(e.dept) && base.some(d => d.resp === e.id));
+  const emps = st.emps === null ? withDeals.map(e => e.id) : st.emps.filter(id => withDeals.some(e => e.id === id));
+  const deals = base.filter(d => emps.includes(d.resp));
+  const cutoff = `срез на ${fmtD(w.fri)}`;
+  let body = '';
+  for (const id of emps) {
+    const e = empById[id];
+    const ed = deals.filter(d => d.resp === id);
+    body += `<tr><td><b>${e.name}</b><span class="sub">${DEPTS[e.dept]}</span></td>${VSTAGES.map((v, i) => `<td>${cell(ed.filter(d => vstageAt(d, w.fri) === i), `${e.name} · ${v}`, cutoff, w.fri)}</td>`).join('')}
+      <td>${cell(ed, e.name, cutoff, w.fri)}</td></tr>`;
+  }
+  body += `<tr class="total"><td>Итого по службе</td>${VSTAGES.map((v, i) => `<td>${cell(deals.filter(d => vstageAt(d, w.fri) === i), v, `Вся служба · ${cutoff}`, w.fri)}</td>`).join('')}
+    <td>${cell(deals, 'Все сделки службы', cutoff, w.fri)}</td></tr>`;
+  const weekOpts = ['Текущая неделя', 'Прошлая неделя', 'Позапрошлая неделя'].map((t, i) => {
+    const x = WEEKS[WEEKS.length - 1 - i];
+    return `<option value="${i}" ${i === st.week ? 'selected' : ''}>${t} (${fmtD(x.mon)} - ${fmtD(x.sun)})</option>`;
+  }).join('');
+  return `<div class="filter">
+      <label class="f"><span>Период</span><select data-set="mweekly.week" id="f-mw-week">${weekOpts}</select></label>
+      ${multiselect('mweekly.depts', 'Отделы', DEPTS.map((d, i) => ({v: i, t: d})), st.depts)}
+      ${multiselect('mweekly.emps', 'Сотрудники', withDeals.map(e => ({v: e.id, t: e.name})), emps)}
+      ${multiselect('mweekly.funnels', 'Воронки', FUNNELS.map(f => ({v: f.id, t: f.name})), st.funnels)}
+      <div class="f"><span>Точка среза</span><div class="fixed">пятница, ${fmtD(w.fri)}</div></div>
+    </div>
+    <div class="grid-wrap"><table class="grid">
+      <thead><tr><th>Сотрудник</th>${VSTAGES.map((v, i) => `<th>${v}${i === 4 ? '<span class="sub">финальная</span>' : ''}</th>`).join('')}<th>Итого</th></tr></thead>
+      <tbody>${emps.length ? body : '<tr><td colspan="7">Нет сотрудников со сделками по выбранным фильтрам</td></tr>'}</tbody>
+    </table></div>
+    <div class="legend"><span>В списке сотрудников - только те, у кого есть сделки на дату среза</span><span>Нажмите на ячейку, чтобы открыть список сделок</span></div>`;
+}
+
+function rMMonthly() {
+  const st = state.mmonthly;
+  const deals = DEALS.filter(d => st.depts.includes(empById[d.resp].dept));
+  return `<div class="filter">
+      <div class="f"><span>Период</span>${seg('mmonthly.mode', st.mode, [['month', 'Месяц'], ['quarter', 'Квартал']])}</div>
+      ${multiselect('mmonthly.depts', 'Отделы', DEPTS.map((d, i) => ({v: i, t: d})), st.depts)}
+      <div class="f"><span>Валюта</span><div class="fixed">RUB</div></div>
+    </div>${periodTable(deals, st.mode, 'Все сотрудники выбранных отделов')}`;
+}
+
+function rSummary() {
+  const st = state.summary;
+  const calc = comps => {
+    const ids = new Set(comps.map(c => c.id));
+    const fps = comps.reduce((a, c) => a + BUDGETS[YEAR][c.id].fps, 0);
+    const budget = comps.reduce((a, c) => a + BUDGETS[YEAR][c.id].budget, 0);
+    const plan = comps.reduce((a, c) => a + BUDGETS[YEAR][c.id].budget * 0.9, 0);
+    const work = DEALS.filter(d => ids.has(d.company) && d.probability >= 50);
+    const signed = DEALS.filter(d => ids.has(d.company) && d.signed);
+    const w = work.reduce((a, d) => a + d.amount, 0), s = signed.reduce((a, d) => a + d.amount, 0);
+    return {fps, budget, plan, work, signed, w, s};
+  };
+  const row = (name, comps, cls, extra = '') => {
+    const r = calc(comps);
+    return `<tr class="${cls}"><td>${extra}${name}</td><td class="num">${money(r.fps)}</td><td class="num">${money(r.budget)}</td><td class="num">${money(r.plan)}</td>
+      <td class="num">${sumCell(r.work, d => d.amount, `В работе · ${name}`, 'Вероятность ≥ 50%')}</td>
+      <td class="num">${sumCell(r.signed, d => d.amount, `Заключено · ${name}`, 'Договор заключён = да')}</td>
+      <td class="num">${pctHtml(pct(r.s, r.plan))}</td><td class="num">${r.w ? (r.budget / r.w * 100).toFixed(0) + '%' : '-'}</td></tr>`;
+  };
+  let body = '';
+  for (const h of HOLDINGS) {
+    const comps = COMPANIES.filter(c => c.holding === h.id);
+    const open = st.open.has(h.id);
+    body += row(h.name, comps, 'group', `<button class="toggle" data-hold="${h.id}" aria-expanded="${open}"><i>›</i></button> `);
+    if (open) for (const c of comps) body += row(c.name, [c], 'child');
+  }
+  body += row('Итого по всем холдингам', COMPANIES, 'total');
+  return `<div class="filter">
+      <div class="f"><span>Группировка</span><div class="fixed">Холдинги (универсальный список)</div></div>
+      <div class="f"><span>Срез</span><div class="fixed">моментальный, ${fmtD(TODAY)}</div></div>
+      <button class="toggle f-note" data-hold="all">${st.open.size === HOLDINGS.length ? 'Свернуть все' : 'Развернуть все'}</button>
+    </div>
+    <div class="grid-wrap"><table class="grid">
+      <thead><tr><th>Холдинг / предприятие</th><th class="num">ФПС</th><th class="num">Планируемый бюджет</th><th class="num">План контрактации КС</th><th class="num">В работе<span class="sub">вероятность ≥ 50%</span></th><th class="num">Заключено</th><th class="num">% выполнения плана<span class="sub">заключено ÷ план</span></th><th class="num">% охвата рынка<span class="sub">бюджет ÷ в работе</span></th></tr></thead>
+      <tbody>${body}</tbody></table></div>
+    <p class="note">Нажмите на холдинг, чтобы увидеть его предприятия. ФПС и Планируемый бюджет - из карт контрагентов холдинга. План контрактации КС - сумма целевых показателей сотрудников, ответственных за холдинг. В работе и Заключено - на дату формирования отчёта.</p>`;
+}
+
+function rRoles() {
+  return `<div class="grid-wrap"><table class="grid">
+    <thead><tr><th>Роль</th><th>Группа отчётов</th><th>Право</th><th>Кому назначена</th></tr></thead>
+    <tbody>
+      <tr><td><b>Сотрудники</b></td><td>Сотрудникам: Еженедельный, Месячный / Квартальный, РКС · план-факт</td><td>Просмотр (включая настройку фильтров)</td><td>Отдел продаж оборудования (отдел)<br>Отдел проектных продаж (отдел)<br>Отдел госзаказа (отдел)</td></tr>
+      <tr><td><b>Руководство</b></td><td>Руководству: Еженедельный, Месячный / Квартальный, Сводный</td><td>Просмотр (включая настройку фильтров)</td><td>Смирнов Андрей (персонально)<br>Кузнецова Елена (персонально)<br>Команда «Дирекция» (команда)</td></tr>
+    </tbody></table></div>
+    <p class="note">Интерфейс управления ролями - стандартный для Битрикс24: роль назначается персонально, на отдел или на команду. Пункты меню отчётов недоступных групп пользователю не показываются - переключите «Смотреть как» вверху страницы, чтобы проверить.</p>`;
+}
+
+function rMap() {
+  const rows = FUNNELS.flatMap(f => f.stages.map(([s, v], i) => `<tr><td>${i === 0 ? `<b>${f.name}</b>` : ''}</td><td>${s}</td><td>${VSTAGES[v]}</td></tr>`)).join('');
+  return `<div class="grid-wrap"><table class="grid">
+    <thead><tr><th>Воронка</th><th>Реальная стадия</th><th>Виртуальная стадия</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="note">Для MVP справочник жёсткий и заполняется вручную при внедрении. Названия воронок и стадий в прототипе - примерные.</p>`;
+}
+
+const RENDER = {weekly: rWeekly, monthly: rMonthly, rks: rRks, mweekly: rMWeekly, mmonthly: rMMonthly, summary: rSummary, roles: rRoles, map: rMap};
+
+function render() {
+  const avail = REPORTS.filter(allowed);
+  if (!['roles', 'map'].includes(state.report) && !avail.some(r => r.id === state.report)) state.report = avail[0]?.id || null;
+  renderMenu();
+  cellStore = [];
+  const work = document.getElementById('work');
+  const title = document.getElementById('title');
+  if (!state.report) {
+    title.textContent = 'Отчёты по сделкам';
+    work.innerHTML = `<div class="empty"><h3>Нет доступа к отчётам</h3>Пользователь не включён ни в роль «Сотрудники», ни в роль «Руководство», поэтому пункты меню отчётов скрыты.</div>`;
+    return;
+  }
+  const r = REPORTS.find(x => x.id === state.report);
+  title.textContent = r ? `${GROUPS[r.group]}: ${r.title}` : state.report === 'roles' ? 'Роли отчётов' : 'Справочник стадий';
+  let tabs = '';
+  if (r) {
+    const same = avail.filter(x => x.group === r.group);
+    tabs = `<div class="tabs" role="tablist">${same.map(x => `<button class="tab ${x.id === r.id ? 'on' : ''}" data-go="${x.id}" role="tab">${x.title}</button>`).join('')}</div>`;
+  }
+  work.innerHTML = tabs + RENDER[state.report]();
+  try { history.replaceState(null, '', '#' + state.report); } catch (e) {}
+}
+
+/* ---------- События ---------- */
+function setPath(path, value) {
+  const [a, b] = path.split('.');
+  state[a][b] = value;
+}
+document.addEventListener('click', e => {
+  const t = e.target;
+  const go = t.closest('[data-go]');
+  if (go) { state.report = go.dataset.go; msOpen = null; render(); return; }
+  const sg = t.closest('[data-seg]');
+  if (sg) { setPath(sg.dataset.seg, sg.dataset.v); render(); return; }
+  const c = t.closest('[data-cell]');
+  if (c) { const s = cellStore[+c.dataset.cell]; openSlider(s.title, s.subtitle, s.deals, s.date); return; }
+  if (t.closest('[data-close]')) { sliderDeals = null; renderSlider(); return; }
+  const h = t.closest('[data-hold]');
+  if (h) {
+    const st = state.summary.open;
+    if (h.dataset.hold === 'all') { if (st.size === HOLDINGS.length) st.clear(); else HOLDINGS.forEach(x => st.add(x.id)); }
+    else { const id = +h.dataset.hold; st.has(id) ? st.delete(id) : st.add(id); }
+    render(); return;
+  }
+  const ms = t.closest('[data-ms]');
+  if (ms) { msOpen = msOpen === ms.dataset.ms ? null : ms.dataset.ms; render(); document.getElementById('ms-' + ms.dataset.ms)?.focus(); return; }
+  if (msOpen && !t.closest('.ms-pop')) { msOpen = null; render(); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (sliderDeals) { sliderDeals = null; renderSlider(); } else if (msOpen) { msOpen = null; render(); } }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-cell]')) { e.preventDefault(); e.target.click(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'role') { state.user = t.value; const u = user(); if (u.emp) state.weekly.emp = u.emp; render(); return; }
+  if (t.dataset.set) { const v = t.dataset.set === 'mweekly.week' ? +t.value : +t.value; setPath(t.dataset.set, v); render(); return; }
+  const optOf = (key) => {
+    const [a, b] = key.split('.');
+    if (key === 'mweekly.emps') {
+      const st = state.mweekly;
+      return EMPLOYEES.filter(x => st.depts.includes(x.dept) && DEALS.some(d => d.resp === x.id && st.funnels.includes(d.funnel) && vstageAt(d, WEEKS[WEEKS.length - 1 - st.week].fri) !== null)).map(x => x.id);
+    }
+    if (key.endsWith('depts')) return DEPTS.map((_, i) => i);
+    if (key.endsWith('funnels')) return FUNNELS.map(f => f.id);
+    return EMPLOYEES.map(x => x.id);
+  };
+  const cast = (key, v) => key.endsWith('funnels') ? v : +v;
+  if (t.dataset.msAll) {
+    const key = t.dataset.msAll;
+    setPath(key, t.checked ? optOf(key) : []);
+    render(); return;
+  }
+  if (t.dataset.msOpt) {
+    const key = t.dataset.msOpt;
+    const [a, b] = key.split('.');
+    let cur = state[a][b] === null ? optOf(key) : [...state[a][b]];
+    const v = cast(key, t.value);
+    cur = t.checked ? [...cur, v] : cur.filter(x => x !== v);
+    setPath(key, cur);
+    render(); return;
+  }
+});
+
+document.getElementById('role').innerHTML = USERS.map(u => `<option value="${u.id}">${u.label}</option>`).join('');
+const hash = (location.hash || '').slice(1);
+if (RENDER[hash]) {
+  state.report = hash;
+  const r = REPORTS.find(x => x.id === hash);
+  if (r && r.group === 'mgmt') { state.user = 'u2'; document.getElementById('role').value = 'u2'; }
+}
+document.getElementById('clock').textContent = '13:45';
+render();
+</script>
+
+</body></html>
