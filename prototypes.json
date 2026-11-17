@@ -1,10 +1,35 @@
 {
   "statuses": [
-    { "id": "draft",    "label": "Черновик",                  "color": "#8A94A6" },
-    { "id": "review",   "label": "На согласовании у клиента", "color": "#F28C00" },
-    { "id": "approved", "label": "Согласован",                "color": "#1BA36A" },
-    { "id": "dev",      "label": "В разработке",              "color": "#0094FF" },
-    { "id": "archive",  "label": "Архив",                     "color": "#B0B7C3" }
+    {
+      "id": "draft",
+      "label": "Черновик",
+      "color": "#8A94A6"
+    },
+    {
+      "id": "internal",
+      "label": "Внутреннее согласование",
+      "color": "#7A5AF8"
+    },
+    {
+      "id": "review",
+      "label": "На согласовании у клиента",
+      "color": "#F28C00"
+    },
+    {
+      "id": "approved",
+      "label": "Согласован",
+      "color": "#1BA36A"
+    },
+    {
+      "id": "dev",
+      "label": "В разработке",
+      "color": "#0094FF"
+    },
+    {
+      "id": "archive",
+      "label": "Архив",
+      "color": "#B0B7C3"
+    }
   ],
   "projects": [
     {
@@ -12,6 +37,12 @@
       "name": "SIBER",
       "url": "https://siber.ru/",
       "description": "Отчёты по сделкам в Битрикс24"
+    },
+    {
+      "id": "est",
+      "name": "ЭСТ",
+      "url": "https://est-group.ru/",
+      "description": "Рабочее место руководителя проекта в Битрикс24"
     }
   ],
   "prototypes": [
@@ -34,12 +65,30 @@
       "statusDate": "2026-11-17",
       "owner": "Сергей Смирнов",
       "screens": [
-        { "label": "Сотрудники · Еженедельный",           "url": "siber/#/weekly" },
-        { "label": "Сотрудники · Месячный / Квартальный", "url": "siber/#/monthly" },
-        { "label": "Сотрудники · РКС, план-факт",          "url": "siber/#/rop" },
-        { "label": "Руководство · Еженедельный",           "url": "siber/#/weekly-management" },
-        { "label": "Руководство · Месячный / Квартальный", "url": "siber/#/monthly-quarterly-management" },
-        { "label": "Руководство · Сводный",                "url": "siber/#/summary-management" }
+        {
+          "label": "Сотрудники · Еженедельный",
+          "url": "siber/#/weekly"
+        },
+        {
+          "label": "Сотрудники · Месячный / Квартальный",
+          "url": "siber/#/monthly"
+        },
+        {
+          "label": "Сотрудники · РКС, план-факт",
+          "url": "siber/#/rop"
+        },
+        {
+          "label": "Руководство · Еженедельный",
+          "url": "siber/#/weekly-management"
+        },
+        {
+          "label": "Руководство · Месячный / Квартальный",
+          "url": "siber/#/monthly-quarterly-management"
+        },
+        {
+          "label": "Руководство · Сводный",
+          "url": "siber/#/summary-management"
+        }
       ],
       "links": []
     },
@@ -48,12 +97,62 @@
       "project": "siber",
       "title": "Отчёты по сделкам НИЦ ТСО (синий вариант)",
       "path": "siber/reports-prototype-blue.html",
-      "files": ["siber/reports-prototype-blue.html"],
+      "files": [
+        "siber/reports-prototype-blue.html"
+      ],
       "description": "",
       "status": "draft",
       "statusDate": "2026-11-17",
       "owner": "",
       "screens": [],
+      "links": []
+    },
+    {
+      "id": "est-rp-workplace",
+      "project": "est",
+      "title": "Рабочее место руководителя проекта",
+      "path": "est/index.html",
+      "files": [
+        "est/index.html"
+      ],
+      "description": "Кликабельный прототип: проекты РП, договоры и документы, заявки на оплату, контрагенты на объекте, витрины себестоимости и объёмов, ИИ-помощник. Демо-данные синтетические.",
+      "status": "draft",
+      "statusDate": "2026-11-17",
+      "owner": "Алексей Рыжов",
+      "screens": [
+        {
+          "label": "Мои проекты",
+          "url": "est/#projects"
+        },
+        {
+          "label": "Мой проект",
+          "url": "est/#summary"
+        },
+        {
+          "label": "Договоры и документы",
+          "url": "est/#docs"
+        },
+        {
+          "label": "Заявки на оплату",
+          "url": "est/#pay"
+        },
+        {
+          "label": "Контрагенты на объекте",
+          "url": "est/#kcs"
+        },
+        {
+          "label": "Себестоимость и риски",
+          "url": "est/#cost"
+        },
+        {
+          "label": "Объёмы и приёмка",
+          "url": "est/#vol"
+        },
+        {
+          "label": "Откуда данные",
+          "url": "est/#trace"
+        }
+      ],
       "links": []
     }
   ]

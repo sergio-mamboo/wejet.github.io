@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Рабочее место РП</title>
+<style>
+:root{
+  --bg:#eef2f4;--panel:#fff;--ink:#1f2933;--muted:#6b7785;--line:#dde3e8;
+  --accent:#0b66c3;--accent-soft:#e6f0fb;--ok:#2e9e4f;--ok-soft:#e5f5ea;
+  --warn:#c77800;--warn-soft:#fff3dc;--bad:#c62f2f;--bad-soft:#fde8e8;
+  --src-sp:#0b66c3;--src-1c:#b58400;--src-calc:#2e9e4f;--src-ai:#7a4fd1;
+  --side:#1d2b3a;--side-ink:#c9d4df;
+}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:var(--accent);text-decoration:none;cursor:pointer}
+a:hover{text-decoration:underline}
+.app{display:flex;min-height:100vh}
+.side{width:232px;flex:none;background:var(--side);color:var(--side-ink);padding:14px 0;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{padding:4px 18px 14px;font-weight:700;color:#fff;font-size:15px}
+.brand small{display:block;font-weight:400;color:#8fa3b7;font-size:12px}
+.nav a{display:flex;justify-content:space-between;align-items:center;padding:9px 18px;color:var(--side-ink);font-size:14px}
+.nav a:hover{background:#26384b;text-decoration:none}
+.nav a.on{background:#2d4359;color:#fff;border-left:3px solid #4fb3ff;padding-left:15px}
+.nav .grp{padding:14px 18px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#7f93a8}
+.nav .tag{font-size:10px;background:#3b5168;border-radius:8px;padding:1px 6px;color:#c9d4df}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 22px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.top select{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;max-width:100%}
+.top .right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:pointer;user-select:none;padding:6px 10px;border:1px solid var(--line);border-radius:16px}
+.toggle.on{background:var(--accent-soft);border-color:#9cc3ec}
+.btn{font:inherit;border:0;border-radius:16px;padding:7px 14px;background:var(--accent);color:#fff;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid #9cc3ec}
+.who{font-size:13px;color:var(--muted)}
+.content{padding:20px 22px 60px;max-width:1280px;width:100%}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--muted);margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px;position:relative;background:#fbfcfd}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:20px;font-weight:650;margin-top:2px;white-space:nowrap}
+.kpi .s{font-size:12px;color:var(--muted)}
+.kpi.bad .v{color:var(--bad)} .kpi.warn .v{color:var(--warn)} .kpi.ok .v{color:var(--ok)}
+.src{display:none;margin-top:6px;font-size:11px;line-height:1.3;border-top:1px dashed var(--line);padding-top:5px;color:var(--muted)}
+.trace .src{display:block}
+.st{display:inline-block;font-size:10px;font-weight:700;border-radius:4px;padding:1px 5px;margin-right:4px;color:#fff;vertical-align:1px}
+.st.sp{background:var(--src-sp)}.st.c1{background:var(--src-1c)}.st.calc{background:var(--src-calc)}.st.ai{background:var(--src-ai)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line);padding:6px 8px}
+td{border-bottom:1px solid #eef1f4;padding:7px 8px;vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.click{cursor:pointer} tr.click:hover td{background:#f5f9fd}
+.chip{display:inline-block;font-size:12px;border-radius:10px;padding:1px 8px;background:#edf1f5;color:#35424f;white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:#1f6e37}.chip.warn{background:var(--warn-soft);color:#8a5400}.chip.bad{background:var(--bad-soft);color:#9b1f1f}.chip.blue{background:var(--accent-soft);color:#0a4f97}
+.stages{display:flex;flex-wrap:wrap;gap:2px;margin:6px 0 2px}
+.stages span{font-size:12px;padding:3px 10px;background:#e4e9ee;color:#55626f;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%)}
+.stages span.done{background:#9fd3ad;color:#174b27}.stages span.cur{background:#2e9e4f;color:#fff}
+.alert{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #eef1f4}
+.alert:last-child{border-bottom:0}
+.code{flex:none;font-weight:700;font-size:12px;width:34px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.code.bad{background:var(--bad-soft);color:var(--bad)}.code.warn{background:var(--warn-soft);color:var(--warn)}.code.ai{background:#efe8fb;color:var(--src-ai)}
+.alert .t{font-size:13px}.alert .m{font-size:12px;color:var(--muted)}
+.gantt{position:relative;font-size:12px}
+.grow{display:grid;grid-template-columns:170px 1fr 60px;gap:8px;align-items:center;padding:4px 0}
+.track{position:relative;height:16px;background:#f0f3f6;border-radius:4px}
+.bar{position:absolute;top:2px;height:12px;border-radius:3px;background:#b9d5f2}
+.bar .f{height:100%;border-radius:3px;background:var(--accent)}
+.bar.late{background:#f3c9c9}.bar.late .f{background:var(--bad)}
+.bar.risk{background:#ffe1a8}
+.today{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--bad)}
+.kan{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(200px,1fr);gap:10px;overflow-x:auto;padding-bottom:6px}
+.col{background:#f4f7f9;border-radius:8px;padding:8px;min-height:120px}
+.col h3{font-size:12px;margin:0 0 8px;color:var(--muted);display:flex;justify-content:space-between}
+.item{background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px;margin-bottom:8px;font-size:12px;cursor:pointer}
+.item:hover{border-color:#9cc3ec}
+.item b{font-size:13px;display:block;margin-bottom:2px}
+.item.alarm{border-left:3px solid var(--bad)}
+.banner{background:var(--warn-soft);border:1px solid #f0d49b;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.banner.blue{background:var(--accent-soft);border-color:#b8d4f1}
+.bars{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#edf1f5;min-width:120px}
+.bars i{display:block;height:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:6px 0 10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.ap{display:flex;gap:8px;align-items:center;font-size:12px;padding:3px 0}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;background:#c4ccd4}
+.dot.ok{background:var(--ok)}.dot.wait{background:var(--warn)}.dot.no{background:var(--bad)}
+.cm{border-left:3px solid var(--line);padding:4px 10px;margin:6px 0;font-size:13px}
+.cm.tense{border-color:var(--src-ai);background:#f7f3fd}
+.cm small{color:var(--muted);display:block}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,30,40,.4);display:none;align-items:flex-start;justify-content:center;z-index:20;padding:40px 16px;overflow:auto}
+.modal.open{display:flex}
+.modal .box{background:#fff;border-radius:10px;max-width:720px;width:100%;padding:20px;position:relative}
+.x{position:absolute;right:14px;top:10px;font-size:22px;cursor:pointer;color:var(--muted);background:none;border:0}
+/* bot */
+.bot{position:fixed;right:0;top:0;bottom:0;width:400px;max-width:100%;background:#fff;border-left:1px solid var(--line);box-shadow:-8px 0 24px rgba(0,0,0,.08);transform:translateX(105%);transition:transform .2s;z-index:15;display:flex;flex-direction:column}
+.bot.open{transform:none}
+.bot header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.bot .log{flex:1;overflow:auto;padding:14px 16px;background:#f7f9fb}
+.msg{margin:0 0 12px;padding:10px 12px;border-radius:10px;font-size:13px;max-width:92%}
+.msg.u{background:var(--accent);color:#fff;margin-left:auto}
+.msg.b{background:#fff;border:1px solid var(--line)}
+.msg.b ul{margin:6px 0;padding-left:18px}
+.msg .why{margin-top:6px;font-size:11px;color:var(--muted)}
+.bot .chips{padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line)}
+.bot .chips button{font:inherit;font-size:12px;border:1px solid #b8d4f1;background:var(--accent-soft);color:#0a4f97;border-radius:14px;padding:4px 10px;cursor:pointer}
+.bot form{display:flex;gap:6px;padding:10px 16px 16px}
+.bot input{flex:1;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.fab{position:fixed;right:22px;bottom:22px;z-index:14;border-radius:24px;padding:12px 18px;box-shadow:0 6px 18px rgba(11,102,195,.35)}
+.foot{color:var(--muted);font-size:12px;padding:0 22px 20px}
+.pbar{height:6px;background:#edf1f5;border-radius:3px;overflow:hidden;margin-top:6px}
+.pbar i{display:block;height:100%;background:var(--accent)}
+.right-n{text-align:right}
+@media (max-width:900px){
+  .app{flex-direction:column}
+  .side{width:100%;height:auto;position:static;display:flex;overflow-x:auto;padding:6px 0}
+  .brand,.nav .grp{display:none}
+  .nav{display:flex}
+  .nav a{white-space:nowrap;padding:8px 12px}
+  .nav a.on{border-left:0;border-bottom:3px solid #4fb3ff;padding-left:12px}
+  .g2,.g3{grid-template-columns:1fr}
+  .content{padding:16px}
+  .top{padding:10px 16px}
+  .grow{grid-template-columns:110px 1fr 44px}
+  .card{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">ЭСТ · портал<small>Рабочее место РП · прототип</small></div>
+    <nav class="nav" id="nav"></nav>
+  </aside>
+  <div class="main">
+    <div class="top">
+      <div><select id="psel" aria-label="Проект"></select></div>
+      <div class="right">
+        <label class="toggle" id="trT" title="Показать под каждым показателем, откуда берутся данные"><input type="checkbox" id="trC"> Источники данных</label>
+        <button class="btn ghost" id="botTop">ИИ-помощник</button>
+        <span class="who" id="who"></span>
+      </div>
+    </div>
+    <div class="content" id="view"></div>
+    <div class="foot">Прототип. Все данные синтетические: проекты, компании и люди вымышлены. Дата демо-мира: 17.11.2026.</div>
+  </div>
+</div>
+
+<button class="btn fab" id="fab">ИИ-помощник</button>
+
+<aside class="bot" id="bot" aria-label="ИИ-помощник">
+  <header><div><b>ИИ-помощник</b><div class="who" id="botCtx"></div></div><button class="x" id="botX" aria-label="Закрыть">×</button></header>
+  <div class="log" id="log"></div>
+  <div class="chips" id="chips"></div>
+  <form id="botF"><input id="botQ" placeholder="Спросите о проекте, договоре, подрядчике…" autocomplete="off"><button class="btn">→</button></form>
+</aside>
+
+<div class="modal" id="modal"><div class="box"><button class="x" id="mX" aria-label="Закрыть">×</button><div id="mBody"></div></div></div>
+
+<script>
+/* ===================== ДЕМО-МИР (синтетика) ===================== */
+const TODAY = '2026-11-17';
+const ME = 'rp';
+const PEOPLE = {
+  rp:  {n:'Андрей Волков',   r:'Руководитель проекта'},
+  adm: {n:'Ольга Мартынова', r:'Администратор проекта'},
+  law: {n:'Марина Ковалёва', r:'Юрист, СДО'},
+  peo: {n:'Олег Седов',      r:'ПЭО'},
+  fin: {n:'Наталья Белова',  r:'Финансовый директор'},
+  fes: {n:'Ирина Лосева',    r:'ФЭС'},
+  pto: {n:'Денис Гаврилов',  r:'Инженер ПТО'}
+};
+
+const PROJECT_STAGES = ['Заключение договора','Подготовка','Реализация','Сдача','Гарантия','Завершён'];
+const DOC_STAGES = ['Подготовка','Согласование','Подписание','Оригиналы','Готов'];
+const PAY_STAGES = ['Новая','Согласование руководителем','Согласование ФЭС','Передана в 1С','Оплачена','Отклонена'];
+const KC_STAGES = ['Оформление','Действует','Закрыт'];
+
+const PROJECTS = [
+ {id:'P-014', name:'Офис продаж ЖК «Северный квартал»', type:'Строительный', client:'ООО «СК Девелопмент»',
+  object:{id:'ОБ-031', name:'Офис продаж, ул. Береговая, 12', stage:'В работе', passport:100},
+  stage:'Реализация', start:'2026-08-03', end:'2026-12-18', budget:41200000,
+  sched:[
+   {n:'Демонтаж',              ps:'2026-08-04', pe:'2026-08-21', fe:'2026-08-21', pct:100},
+   {n:'Инженерные системы',    ps:'2026-08-24', pe:'2026-10-30', fe:'2026-11-06', pct:100},
+   {n:'Чистовая отделка',      ps:'2026-10-26', pe:'2026-12-04', pct:55},
+   {n:'Витражи',               ps:'2026-11-24', pe:'2026-12-04', pct:0, dep:'ДП-312'},
+   {n:'Слаботочные системы',   ps:'2026-11-30', pe:'2026-12-11', pct:0, dep:'ДП-316'},
+   {n:'Мебель и комплектация', ps:'2026-12-01', pe:'2026-12-11', pct:0},
+   {n:'Сдача объекта',         ps:'2026-12-14', pe:'2026-12-18', pct:0}],
+  cost:[
+   {a:'Демонтаж',plan:900000},{a:'Общестрой и отделка',plan:12800000},{a:'ОВиК',plan:7000000},
+   {a:'Электроснабжение',plan:5600000},{a:'Витражи',plan:4100000},{a:'Слаботочные системы',plan:2100000},
+   {a:'Мебель',plan:4400000},{a:'Материалы ЭСТ',plan:2800000},{a:'Накладные и прочее',plan:1500000}],
+  vol:[
+   {pos:'Перегородка тип 2', u:'м²', q:640, works:['Каркас металлический','Уплотнительная лента','ГКЛ в 2 слоя'], k:'ДП-309', rep:410, acc:380, cl:300},
+   {pos:'Потолок подвесной',  u:'м²', q:820, works:['Подвесная система','Плита потолочная'], k:'ДП-309', rep:820, acc:820, cl:600},
+   {pos:'Кабельная линия освещения', u:'м', q:2400, works:['Прокладка кабеля','Гофротруба','Распределительные коробки'], k:'ДП-305', rep:1900, acc:1400, cl:1400},
+   {pos:'Воздуховоды приточной системы', u:'м²', q:360, works:['Монтаж воздуховодов','Теплоизоляция'], k:'ДП-301', rep:360, acc:360, cl:330}]
+ },
+ {id:'P-017', name:'Бутик «Линия», ТЦ «Меридиан»', type:'Строительный', client:'АО «Линия Ритейл»',
+  object:{id:'ОБ-036', name:'Бутик, ТЦ «Меридиан», 2 этаж', stage:'Исходные данные собраны', passport:60},
+  stage:'Заключение договора', start:'2026-12-01', end:'2027-02-26', budget:11300000,
+  sched:[{n:'Демонтаж и подготовка', ps:'2026-12-01', pe:'2026-12-12', pct:0},{n:'Отделка и инженерия', ps:'2026-12-14', pe:'2027-02-12', pct:0},{n:'Сдача объекта', ps:'2027-02-15', pe:'2027-02-26', pct:0}],
+  cost:[{a:'Общестрой и отделка',plan:6200000},{a:'Инженерные системы',plan:3100000},{a:'Накладные и прочее',plan:2000000}],
+  vol:[]
+ },
+ {id:'P-009', name:'Вилла «Озёрная»', type:'Строительный', client:'ООО «Озёрная Резиденция»',
+  object:{id:'ОБ-022', name:'Вилла, пос. Озёрный, уч. 7', stage:'Без активных работ', passport:100},
+  stage:'Гарантия', start:'2025-04-21', end:'2025-12-10', budget:30100000,
+  sched:[{n:'Строительство', ps:'2025-04-21', pe:'2025-11-28', fe:'2025-12-05', pct:100},{n:'Сдача объекта', ps:'2025-12-01', pe:'2025-12-10', fe:'2025-12-10', pct:100}],
+  cost:[{a:'Кровля',plan:4300000},{a:'Общестрой и отделка',plan:25800000}],
+  vol:[]
+ }
+];
+
+/* Договоры с клиентом */
+const CC = [
+ {id:'К-2026/118', p:'P-014', sum:52800000, stage:'Действует', signed:'2026-07-28',
+  ds:[{n:'ДС-1 (доп. работы: брендирование)', sum:2350000, stage:'Оформление', doc:'ОД-1210'}],
+  inc:[{d:'2026-08-05', sum:15840000, w:'Аванс 30%'},{d:'2026-10-20', sum:9000000, w:'Промежуточный платёж'}],
+  acts:[{n:'КС-2/КС-3 №1', d:'2026-09-30', sum:8100000},{n:'КС-2/КС-3 №2', d:'2026-10-30', sum:10300000}]},
+ {id:'К-2026/131', p:'P-017', sum:14600000, stage:'Оформление', ds:[], inc:[], acts:[]},
+ {id:'К-2025/087', p:'P-009', sum:38900000, stage:'Закрыт', signed:'2025-04-14', ds:[],
+  inc:[{d:'2025-04-20', sum:11670000, w:'Аванс 30%'},{d:'2025-12-22', sum:25285000, w:'Окончательный расчёт'}],
+  acts:[{n:'КС-2/КС-3 итоговый', d:'2025-12-10', sum:38900000}], retention:1945000, retentionDue:'2027-07-15'}
+];
+
+/* Договоры с контрагентами */
+const KC = [
+ {id:'ДП-298', p:'P-014', c:'ООО «Демонтаж-Сервис»', kind:'Субподряд', subj:'Демонтаж', art:'Демонтаж', sum:860000, stage:'Закрыт', ds:[],
+  acts:[{n:'КС-2 №1', d:'2026-08-21', sum:860000, st:'Принят'}]},
+ {id:'ДП-301', p:'P-014', c:'ООО «ТеплоМонтаж»', kind:'Субподряд', subj:'Отопление, вентиляция, кондиционирование', art:'ОВиК', sum:6850000, stage:'Действует',
+  ds:[{n:'ДС-1 (доп. фанкойлы)', sum:420000, stage:'Действует', doc:'ОД-1198'}],
+  acts:[{n:'КС-2 №1', d:'2026-09-25', sum:2100000, st:'Принят'},{n:'КС-2 №2', d:'2026-10-28', sum:1650000, st:'Принят'}],
+  est:[{n:'Воздуховоды приточные',u:'м²',q:360,pr:7500},{n:'Вентустановка, монтаж',u:'шт',q:2,pr:650000},{n:'Кондиционеры VRF, монтаж',u:'шт',q:24,pr:68750},{n:'Отопление',u:'компл',q:1,pr:1200000},{n:'Фанкойлы (ДС-1)',u:'шт',q:6,pr:70000,ds:'ДС-1'}]},
+ {id:'ДП-305', p:'P-014', c:'ООО «ЭлектроСтрой М»', kind:'Субподряд', subj:'Электромонтажные работы', art:'Электроснабжение', sum:5400000, stage:'Действует',
+  ds:[{n:'ДС-1 (доп. кабельные линии)', sum:610000, stage:'Оформление', doc:'ОД-1201'}],
+  acts:[{n:'КС-2 №1', d:'2026-10-15', sum:1900000, st:'Принят'},{n:'КС-2 №2', d:'2026-11-16', sum:1300000, st:'На приёмке ПТО'}],
+  est:[{n:'Кабельные линии освещения',u:'м',q:2400,pr:950},{n:'Кабельные линии силовые',u:'м',q:1400,pr:860},{n:'Щиты распределительные',u:'шт',q:6,pr:185000},{n:'Светильники, монтаж',u:'шт',q:310,pr:2600},{n:'Доп. кабельные линии (ДС-1)',u:'м',q:610,pr:1000,ds:'ДС-1'}]},
+ {id:'ДП-309', p:'P-014', c:'ООО «Отделка Профи»', kind:'Субподряд', subj:'Общестроительные и отделочные работы', art:'Общестрой и отделка', sum:12300000, stage:'Действует', ds:[],
+  acts:[{n:'КС-2 №1', d:'2026-09-30', sum:3900000, st:'Принят'},{n:'КС-2 №2', d:'2026-10-30', sum:2700000, st:'Принят'}]},
+ {id:'ДП-312', p:'P-014', c:'ООО «Стекло-Профи»', kind:'Субподряд', subj:'Витражи и стеклянные перегородки', art:'Витражи', sum:3950000, stage:'Оформление', ds:[], acts:[]},
+ {id:'ДП-315', p:'P-014', c:'ООО «МебельПроект»', kind:'Поставка', subj:'Поставка мебели', art:'Мебель', sum:4200000, stage:'Действует', ds:[], acts:[]},
+ {id:'ДП-316', p:'P-014', c:'ООО «СлабТокМонтаж»', kind:'Субподряд', subj:'Слаботочные системы', art:'Слаботочные системы', sum:2050000, stage:'Оформление', ds:[], acts:[]},
+ {id:'ДП-2025/207', p:'P-009', c:'ООО «КровляМастер»', kind:'Субподряд', subj:'Кровельные работы', art:'Кровля', sum:4100000, stage:'Закрыт', ds:[],
+  acts:[{n:'КС-2 итоговый', d:'2025-11-20', sum:4100000, st:'Принят'}]}
+];
+
+/* Заявки на оплату (СП); c1 - статус, вернувшийся из 1С */
+const PAY = [
+ {id:'ЗО-0380', k:'ДП-298', sum:860000,  w:'Оплата по акту №1', stage:'Оплачена', c1:'Оплачено 02.09.2026', cr:'2026-08-24'},
+ {id:'ЗО-0388', k:'ДП-301', sum:2055000, w:'Аванс 30%',          stage:'Оплачена', c1:'Оплачено 20.08.2026', cr:'2026-08-12'},
+ {id:'ЗО-0391', k:'ДП-309', sum:3690000, w:'Аванс 30%',          stage:'Оплачена', c1:'Оплачено 24.08.2026', cr:'2026-08-14'},
+ {id:'ЗО-0395', k:'ДП-305', sum:1620000, w:'Аванс 30%',          stage:'Оплачена', c1:'Оплачено 27.08.2026', cr:'2026-08-19'},
+ {id:'ЗО-0421', k:'ДП-301', sum:1470000, w:'Оплата по акту №1',  stage:'Оплачена', c1:'Оплачено 09.10.2026', cr:'2026-09-29'},
+ {id:'ЗО-0428', k:'ДП-309', sum:2410000, w:'Оплата по акту №1',  stage:'Оплачена', c1:'Оплачено 16.10.2026', cr:'2026-10-05'},
+ {id:'ЗО-0431', k:'ДП-315', sum:2100000, w:'Предоплата 50%',     stage:'Оплачена', c1:'Оплачено 30.10.2026', cr:'2026-10-21'},
+ {id:'ЗО-0449', k:'ДП-301', sum:225000,  w:'Оплата по акту №2',  stage:'Отклонена', c1:'-', cr:'2026-11-10', closed:'2026-11-13', reason:''},
+ {id:'ЗО-0457', k:'ДП-305', sum:280000,  w:'Оплата по акту №1 (остаток)', stage:'Согласование руководителем', c1:'-', cr:'2026-11-16', task:{w:'fin', from:'2026-11-16', t:'09:40'}},
+ {id:'ЗО-0462', k:'ДП-309', sum:500000,  w:'Оплата по акту №2 (остаток)', stage:'Передана в 1С', c1:'В реестре платежей на 19.11.2026', cr:'2026-11-12'},
+ {id:'ЗО-0201', k:'ДП-2025/207', sum:4100000, w:'Оплата по итоговому акту', stage:'Оплачена', c1:'Оплачено 01.12.2025', cr:'2025-11-21'}
+];
+
+/* Оформление документов (СП): путь юрдокумента, согласования - задания БП */
+const DOCS = [
+ {id:'ОД-1190', p:'P-014', k:'ДП-298', type:'КС-2/КС-3', title:'КС-2/КС-3 №1 к ДП-298', stage:'Оригиналы', since:'2026-10-28',
+  ap:[{w:'pto',st:'ok',d:'2026-08-24'},{w:'rp',st:'ok',d:'2026-08-25'}]},
+ {id:'ОД-1198', p:'P-014', k:'ДП-301', type:'ДС', title:'ДС-1 к ДП-301 (доп. фанкойлы)', stage:'Готов', since:'2026-10-02',
+  ap:[{w:'rp',st:'ok',d:'2026-09-22'},{w:'peo',st:'ok',d:'2026-09-23'},{w:'law',st:'ok',d:'2026-09-24'}]},
+ {id:'ОД-1201', p:'P-014', k:'ДП-305', type:'ДС', title:'ДС-1 к ДП-305 (доп. кабельные линии)', stage:'Согласование', since:'2026-11-11',
+  ap:[{w:'rp',st:'ok',d:'2026-11-11'},{w:'peo',st:'ok',d:'2026-11-11'},{w:'law',st:'wait',from:'2026-11-11'}],
+  cm:[{w:'law',d:'12.11 10:14',t:'В ДС нет ссылки на смету. На что опираемся по объёмам?'},
+      {w:'rp', d:'12.11 16:40',t:'Смета в приложении, прикладываю ещё раз. Работы уже идут, подрядчик ждёт.'},
+      {w:'law',d:'13.11 11:02',t:'Без подписанной сметы не визирую. Работы до ДС - ваш риск.',tense:true},
+      {w:'rp', d:'13.11 11:30',t:'Тогда кто будет объяснять заказчику срыв сроков?',tense:true}]},
+ {id:'ОД-1207', p:'P-014', k:'ДП-312', type:'Договор', title:'Договор ДП-312 (витражи)', stage:'Подписание', since:'2026-11-09', cp:true,
+  ap:[{w:'rp',st:'ok',d:'2026-11-05'},{w:'peo',st:'ok',d:'2026-11-06'},{w:'law',st:'ok',d:'2026-11-06'}]},
+ {id:'ОД-1210', p:'P-014', kc:'К-2026/118', type:'ДС', title:'ДС-1 к договору с клиентом К-2026/118', stage:'Подписание', since:'2026-11-13', cp:true,
+  ap:[{w:'rp',st:'ok',d:'2026-11-11'},{w:'peo',st:'ok',d:'2026-11-12'},{w:'law',st:'ok',d:'2026-11-12'}]},
+ {id:'ОД-1212', p:'P-014', k:'ДП-305', type:'КС-2', title:'КС-2 №2 к ДП-305', stage:'Согласование', since:'2026-11-16',
+  ap:[{w:'pto',st:'wait',from:'2026-11-16'},{w:'rp',st:'next'}]},
+ {id:'ОД-1213', p:'P-014', k:'ДП-316', type:'Договор', title:'Договор ДП-316 (слаботочные системы)', stage:'Согласование', since:'2026-11-17',
+  ap:[{w:'peo',st:'ok',d:'2026-11-17'},{w:'rp',st:'wait',from:'2026-11-17'},{w:'law',st:'next'}]},
+ {id:'ОД-1215', p:'P-017', kc:'К-2026/131', type:'Договор', title:'Договор с клиентом К-2026/131', stage:'Согласование', since:'2026-11-12',
+  ap:[{w:'law',st:'ok',d:'2026-11-13'},{w:'peo',st:'ok',d:'2026-11-13'},{w:'rp',st:'wait',from:'2026-11-16'}]}
+];
+
+/* Нормативы для симптомов (черновые, уточнить с ЭСТ) */
+const NORM = {approve:2, counterparty:5, originals:10, depWindow:14};
+
+/* ===================== РАСЧЁТЫ ===================== */
+const D = s => new Date(s+'T00:00:00');
+function bdays(a,b=TODAY){let d=D(a),e=D(b),n=0;while(d<e){d.setDate(d.getDate()+1);const w=d.getDay();if(w>0&&w<6)n++;}return n;}
+function cdays(a,b=TODAY){return Math.round((D(b)-D(a))/864e5);}
+const fd = s => s ? s.slice(8,10)+'.'+s.slice(5,7)+'.'+s.slice(0,4) : '-';
+const sum = (arr,f=x=>x.sum) => arr.reduce((a,x)=>a+f(x),0);
+function money(v){
+  const a=Math.abs(v), s=v<0?'−':'';
+  if(a>=1e6) return s+(a/1e6).toLocaleString('ru-RU',{maximumFractionDigits:2})+' млн ₽';
+  if(a>=1e3) return s+Math.round(a/1e3).toLocaleString('ru-RU')+' тыс. ₽';
+  return s+a.toLocaleString('ru-RU')+' ₽';
+}
+const rub = v => v.toLocaleString('ru-RU')+' ₽';
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const P = id => PROJECTS.find(p=>p.id===id);
+const K = id => KC.find(k=>k.id===id);
+const who = w => PEOPLE[w] ? PEOPLE[w].n : w;
+const role = w => PEOPLE[w] ? PEOPLE[w].r : '';
+
+function kcCalc(k){
+  const dsOn  = sum((k.ds||[]).filter(d=>d.stage==='Действует'));
+  const dsPend= sum((k.ds||[]).filter(d=>d.stage!=='Действует'));
+  const total = k.sum + dsOn;
+  const done  = sum((k.acts||[]).filter(a=>a.st==='Принят'));
+  const onAcc = sum((k.acts||[]).filter(a=>a.st!=='Принят'));
+  const pays  = PAY.filter(x=>x.k===k.id);
+  const paid  = sum(pays.filter(x=>x.stage==='Оплачена'));
+  const inPay = sum(pays.filter(x=>!['Оплачена','Отклонена'].includes(x.stage)));
+  return {dsOn,dsPend,total,done,onAcc,paid,inPay,debt:Math.max(done-paid,0),adv:Math.max(paid-done,0),left:total-done};
+}
+function projCalc(pid){
+  const p=P(pid), cc=CC.find(c=>c.p===pid)||{sum:0,ds:[],inc:[],acts:[]};
+  const ks=KC.filter(k=>k.p===pid);
+  let contracted=0,pending=0,paid=0,debt=0,adv=0,done=0;
+  ks.forEach(k=>{const c=kcCalc(k); if(k.stage==='Оформление') pending+=k.sum; else {contracted+=c.total; pending+=c.dsPend;} paid+=c.paid; debt+=c.debt; adv+=c.adv; done+=c.done;});
+  const cTotal=cc.sum+sum(cc.ds.filter(d=>d.stage==='Действует'));
+  const cPend=sum(cc.ds.filter(d=>d.stage!=='Действует'));
+  const inc=sum(cc.inc), closed=sum(cc.acts);
+  return {cc,ks,contracted,pending,paid,debt,adv,done,cTotal,cPend,inc,closed,
+    unclosedAdv:Math.max(inc-closed,0), clientOwes:Math.max(closed-inc,0),
+    margin:cTotal-p.budget, freeBudget:p.budget-contracted-pending};
+}
+function costRows(pid){
+  const p=P(pid); const ks=KC.filter(k=>k.p===pid);
+  return p.cost.map(r=>{
+    const mine=ks.filter(k=>k.art===r.a);
+    let con=0,pend=0,paid=0;
+    mine.forEach(k=>{const c=kcCalc(k); if(k.stage==='Оформление') pend+=k.sum; else {con+=c.total; pend+=c.dsPend;} paid+=c.paid;});
+    return {...r,con,pend,paid,over:con+pend-r.plan,ks:mine};
+  });
+}
+
+/* Симптомы П1-П6: правила по данным СП (то же должен уметь бот на стенде) */
+function alerts(pid){
+  const out=[];
+  DOCS.filter(d=>d.p===pid).forEach(d=>{
+    (d.ap||[]).filter(a=>a.st==='wait').forEach(a=>{
+      const n=bdays(a.from);
+      if(n>NORM.approve) out.push({c:'П1',lvl:'bad',t:`${d.title}: ${n} р.д. на согласовании, ждём: ${who(a.w)} (${role(a.w)})`,m:`Норматив ${NORM.approve} р.д. Задание БП с ${fd(a.from)}.`,go:['doc',d.id],src:'Оформление документов: задания БП, дата назначения'});
+    });
+    if(d.stage==='Подписание'&&d.cp){const n=bdays(d.since); if(n>NORM.counterparty) out.push({c:'П1',lvl:'bad',t:`${d.title}: на подписании у контрагента ${n} р.д.`,m:`Норматив ожидания контрагента ${NORM.counterparty} р.д.`,go:['doc',d.id],src:'Оформление документов: стадия, дата входа в стадию'});}
+    if(d.stage==='Оригиналы'){const n=bdays(d.since); const k=d.k&&K(d.k); if(n>NORM.originals) out.push({c:'П6',lvl:'warn',t:`${d.title}: ${k&&k.stage==='Закрыт'?'договор закрыт, а ':''}оригиналы ждём ${n} р.д.`,m:`Норматив ${NORM.originals} р.д. (уточнить с ЭСТ).`,go:['doc',d.id],src:'Оформление документов: стадия «Оригиналы» + стадия договора'});}
+    if((d.cm||[]).some(c=>c.tense)) out.push({c:'П5',lvl:'ai',t:`${d.title}: напряжённая переписка юриста и РП`,m:'Оценка ИИ по комментариям к элементу.',go:['doc',d.id],src:'ИИ: комментарии к элементу СП'});
+  });
+  PAY.filter(x=>{const k=K(x.k);return k&&k.p===pid;}).forEach(x=>{
+    if(x.task&&cdays(x.task.from)>=1) out.push({c:'П3',lvl:'bad',t:`${x.id} (${K(x.k).c}, ${money(x.sum)}): нет ответа больше суток, ждём: ${who(x.task.w)} (${role(x.task.w)})`,m:`Задание БП с ${fd(x.task.from)} ${x.task.t}.`,go:['pay',x.id],src:'Заявка на оплату: задание БП, дата назначения'});
+    if(x.stage==='Отклонена'&&!x.reason) out.push({c:'П2',lvl:'warn',t:`${x.id} (${K(x.k).c}) отклонена без причины`,m:`Отклонена ${fd(x.closed)}; долг по акту остаётся.`,go:['pay',x.id],src:'Заявка на оплату: стадия + поле «Причина отклонения»'});
+  });
+  const p=P(pid);
+  p.sched.forEach(s=>{ if(s.dep){const k=K(s.dep); const n=cdays(TODAY,s.ps); if(k&&k.stage==='Оформление'&&n>=0&&n<=NORM.depWindow) out.push({c:'П4',lvl:'bad',t:`Этап «${s.n}» начинается ${fd(s.ps)} (через ${n} дн.), а договор ${k.id} ещё не подписан`,m:`${k.c}, стадия договора «${k.stage}».`,go:['kc',k.id],src:'Этап проекта: дата начала + Договор с контрагентом: стадия'});}});
+  costRows(pid).forEach(r=>{ if(r.over>0) out.push({c:'₽',lvl:'warn',t:`Статья «${r.a}»: законтрактовано и в оформлении ${money(r.con+r.pend)} при плане ${money(r.plan)}`,m:`Превышение ${money(r.over)}.`,go:['cost'],src:'Расчёт: договоры с контрагентами по статье против плана себестоимости'});});
+  return out;
+}
+function myTasks(){
+  const out=[];
+  DOCS.forEach(d=>(d.ap||[]).forEach(a=>{if(a.w===ME&&a.st==='wait') out.push({t:`Согласовать: ${d.title}`,p:d.p,from:a.from,go:['doc',d.id]});}));
+  return out;
+}
+
+/* ===================== ТРАССИРОВКА ===================== */
+const TRACE = new Map();
+const SRC = {sp:'СП',c1:'1С',calc:'Расчёт',ai:'ИИ'};
+function src(t,e,f){return {t,e,f};}
+function srcHtml(s){return s?`<div class="src"><span class="st ${s.t}">${SRC[s.t]}</span>${esc(s.e)}${s.f?': '+esc(s.f):''}</div>`:'';}
+function kpi(scr,label,val,s,sub,cls=''){
+  if(s) TRACE.set(scr+'|'+label,{scr,label,...s});
+  return `<div class="kpi ${cls}"><div class="l">${esc(label)}</div><div class="v">${val}</div>${sub?`<div class="s">${sub}</div>`:''}${srcHtml(s)}</div>`;
+}
+function reg(scr,label,s){TRACE.set(scr+'|'+label,{scr,label,...s}); return srcHtml(s);}
+
+/* ===================== UI ===================== */
+let state={pid:'P-014'};
+const $=id=>document.getElementById(id);
+function stages(list,cur){const i=list.indexOf(cur);return `<div class="stages">${list.map((s,j)=>`<span class="${j<i?'done':j===i?'cur':''}">${esc(s)}</span>`).join('')}</div>`;}
+function chipFor(st){
+  if(['Действует','Оплачена','Готов','Принят','Закрыт'].includes(st)) return 'ok';
+  if(['Отклонена'].includes(st)) return 'bad';
+  if(['Оформление','Согласование','Подписание','Оригиналы','Согласование руководителем','Согласование ФЭС','На приёмке ПТО'].includes(st)) return 'warn';
+  return 'blue';
+}
+const chip = st => `<span class="chip ${chipFor(st)}">${esc(st)}</span>`;
+function go(...a){location.hash='#'+a.map(encodeURIComponent).join('/');}
+function link(a,text){return `<a onclick='go(${a.map(x=>JSON.stringify(x)).join(',')})'>${esc(text)}</a>`;}
+function alertHtml(a){return `<div class="alert"><div class="code ${a.lvl}">${a.c}</div><div><div class="t">${link(a.go,a.t)}</div><div class="m">${esc(a.m)}</div>${srcHtml({t:a.src.startsWith('ИИ')?'ai':a.src.startsWith('Расчёт')?'calc':'sp',e:a.src.replace(/^(ИИ|Расчёт): /,'')})}</div></div>`;}
+
+const NAV=[
+ {g:'Проекты'},
+ {id:'projects',t:'Мои проекты'},
+ {id:'summary',t:'Мой проект'},
+ {g:'Договоры и деньги'},
+ {id:'docs',t:'Договоры и документы'},
+ {id:'pay',t:'Заявки на оплату'},
+ {id:'kcs',t:'Контрагенты на объекте'},
+ {g:'Витрины (v2)'},
+ {id:'cost',t:'Себестоимость и риски',tag:'витрина'},
+ {id:'vol',t:'Объёмы и приёмка',tag:'витрина'},
+ {g:'Для обсуждения'},
+ {id:'trace',t:'Откуда данные'}
+];
+function renderNav(cur){
+  $('nav').innerHTML=NAV.map(n=>n.g?`<div class="grp">${n.g}</div>`:`<a class="${n.id===cur?'on':''}" onclick="go('${n.id}')"><span>${n.t}</span>${n.tag?`<span class="tag">${n.tag}</span>`:''}</a>`).join('');
+}
+
+/* ---- Мои проекты ---- */
+function vProjects(){
+  const S='Мои проекты';
+  return `<h1>Мои проекты</h1><div class="sub">${PEOPLE[ME].n}, ${PEOPLE[ME].r.toLowerCase()}</div>
+  <div class="grid g3">${PROJECTS.map(p=>{
+    const c=projCalc(p.id), al=alerts(p.id), tot=cdays(p.start,p.end), el=Math.min(Math.max(cdays(p.start),0),tot);
+    return `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><h2 style="margin:0">${link(['summary',p.id],p.name)}</h2>${chip(p.stage)}</div>
+    <div class="sub" style="margin:4px 0 10px">${esc(p.client)} · ${fd(p.start)} - ${fd(p.end)}</div>
+    <div class="kpis">
+      ${kpi(S,'Договор с клиентом',money(c.cTotal),src('sp','Договор с клиентом','сумма + действующие ДС'))}
+      ${kpi(S,'Тревоги',al.length?`<span style="color:var(--bad)">${al.length}</span>`:'0',src('ai','Симптомы П1-П6','правила по стадиям и заданиям БП'))}
+    </div>
+    <div class="pbar" title="Прошло срока"><i style="width:${tot?Math.round(el/tot*100):0}%"></i></div>
+    <div class="who" style="margin-top:4px">Прошло ${tot?Math.round(el/tot*100):0}% срока проекта${p.object.passport<100?` · паспорт объекта заполнен на ${p.object.passport}%`:''}</div>
+    </div>`;}).join('')}</div>`;
+}
+
+/* ---- Мой проект ---- */
+function gantt(p){
+  const a=D(p.start), b=D(p.end), span=(b-a)||1, pos=s=>Math.max(0,Math.min(100,(D(s)-a)/span*100));
+  const t=pos(TODAY);
+  return `<div class="gantt">${p.sched.map(s=>{
+    const late=s.fe&&s.fe>s.pe, k=s.dep&&K(s.dep), risk=k&&k.stage==='Оформление';
+    const L=pos(s.ps), R=pos(s.fe&&s.fe>s.pe?s.fe:s.pe);
+    return `<div class="grow"><div>${esc(s.n)}${risk?` <span class="chip bad">нет договора</span>`:''}</div>
+      <div class="track"><div class="bar ${late?'late':risk?'risk':''}" style="left:${L}%;width:${Math.max(R-L,1.5)}%"><div class="f" style="width:${s.pct}%"></div></div>${t>0&&t<100?`<div class="today" style="left:${t}%"></div>`:''}</div>
+      <div class="right-n">${s.pct}%</div></div>`;}).join('')}
+  </div><div class="legend"><span><i style="background:var(--accent)"></i>выполнено</span><span><i style="background:#f3c9c9"></i>с отставанием</span><span><i style="background:#ffe1a8"></i>под риском</span><span><i style="background:var(--bad)"></i>сегодня</span></div>`;
+}
+function vSummary(){
+  const p=P(state.pid), c=projCalc(p.id), al=alerts(p.id), S='Мой проект';
+  const mine=myTasks().filter(x=>x.p===p.id);
+  const late=p.sched.filter(s=>s.fe&&s.fe>s.pe);
+  return `<h1>${esc(p.name)}</h1>
+  <div class="sub">${esc(p.client)} · объект ${esc(p.object.id)} «${esc(p.object.name)}» · ${fd(p.start)} - ${fd(p.end)}</div>
+  ${stages(PROJECT_STAGES,p.stage)}${reg(S,'Стадия проекта',src('sp','Проект','стадия'))}
+  ${p.object.passport<100?`<div class="banner" style="margin-top:12px">Паспорт объекта заполнен на ${p.object.passport}%. Проект не перейдёт дальше «Заключения договора», пока паспорт не заполнен.${reg(S,'Паспорт объекта',src('sp','Объект','обязательные поля стадии «Готов к проекту»'))}</div>`:''}
+  <div class="grid g2" style="margin-top:14px">
+   <div>
+    <div class="card"><h2>Деньги с клиентом</h2><div class="kpis">
+      ${kpi(S,'Договор с клиентом',money(c.cTotal),src('sp','Договор с клиентом','сумма + действующие ДС'),c.cPend?`+ ${money(c.cPend)} ДС в оформлении`:'')}
+      ${kpi(S,'Получено от клиента',money(c.inc),src('c1','Поступления по договору','из 1С'))}
+      ${kpi(S,'Закрыто актами',money(c.closed),src('sp','Оформление документов','КС-2/КС-3 клиенту, стадия «Готов»'))}
+      ${c.cc.retention?kpi(S,'Гарантийное удержание',money(c.clientOwes),src('calc','Закрыто актами − получено'),`ожидаем ${fd(c.cc.retentionDue)}`,'warn')
+        :kpi(S,'Незакрытый аванс',money(c.unclosedAdv),src('calc','Получено − закрыто актами'),'«не наши деньги», пока не закрыт',c.unclosedAdv?'warn':'')}
+    </div></div>
+    <div class="card"><h2>Подрядчики и себестоимость</h2><div class="kpis">
+      ${kpi(S,'План себестоимости',money(p.budget),src('sp','Проект','план себестоимости (из сметы, v2)'),`маржа по плану ${money(c.margin)}`)}
+      ${kpi(S,'Законтрактовано',money(c.contracted),src('calc','Договоры с контрагентами','Σ (сумма + ДС), стадии «Действует», «Закрыт»'),c.pending?`+ ${money(c.pending)} в оформлении`:'')}
+      ${kpi(S,'Оплачено подрядчикам',money(c.paid),src('c1','Заявки на оплату','статус «Оплачено» из 1С'))}
+      ${kpi(S,'Долг перед подрядчиками',money(c.debt),src('calc','Принято по актам − оплачено'),'принятые акты без оплаты',c.debt?'bad':'ok')}
+      ${c.adv?kpi(S,'Выданные авансы',money(c.adv),src('calc','Оплачено − принято по актам'),'ещё не закрыты работами'):''}
+    </div></div>
+    <div class="card"><h2>Сроки</h2>${late.length?`<div class="sub" style="margin-bottom:8px">С отставанием: ${late.map(s=>`«${esc(s.n)}» на ${bdays(s.pe,s.fe)} р.д.`).join(', ')}</div>`:''}${gantt(p)}${reg(S,'График этапов',src('sp','Этап проекта','даты план / факт, % выполнения'))}</div>
+   </div>
+   <div>
+    <div class="card"><h2>Ждут меня (${mine.length})</h2>${mine.length?mine.map(m=>`<div class="alert"><div class="code warn">БП</div><div><div class="t">${link(m.go,m.t)}</div><div class="m">с ${fd(m.from)}</div></div></div>`).join(''):'<div class="who">Нет заданий</div>'}${reg(S,'Ждут меня',src('sp','Задания БП','исполнитель = я, не выполнено'))}</div>
+    <div class="card"><h2>Тревоги (${al.length})</h2>${al.length?al.map(alertHtml).join(''):'<div class="who">Всё спокойно</div>'}
+      <button class="btn ghost" style="margin-top:10px" onclick="botAsk('Сводка по проекту')">Сводка от ИИ-помощника</button></div>
+   </div>
+  </div>`;
+}
+
+/* ---- Договоры и документы ---- */
+function vDocs(){
+  const p=P(state.pid), S='Договоры и документы';
+  const cc=CC.filter(c=>c.p===p.id), ks=KC.filter(k=>k.p===p.id), ds=DOCS.filter(d=>d.p===p.id);
+  const al=alerts(p.id), alarmed=new Set(al.filter(a=>a.go[0]==='doc').map(a=>a.go[1]));
+  return `<h1>Договоры и документы</h1><div class="sub">${esc(p.name)}</div>
+  <div class="card"><h2>Договор с клиентом</h2><table><tr><th>Номер</th><th>Клиент</th><th class="n">Сумма</th><th>ДС</th><th>Стадия</th></tr>
+   ${cc.map(c=>`<tr><td>${esc(c.id)}</td><td>${esc(p.client)}</td><td class="n">${rub(c.sum)}</td><td>${c.ds.map(d=>`${esc(d.n)}: ${money(d.sum)} ${chip(d.stage)}`).join('<br>')||'-'}</td><td>${chip(c.stage)}</td></tr>`).join('')}</table>
+   ${reg(S,'Договор с клиентом',src('sp','Договор с клиентом','номер, сумма, ДС, стадия'))}</div>
+  <div class="card"><h2>Договоры с контрагентами</h2><table><tr><th>Номер</th><th>Контрагент</th><th>Предмет</th><th class="n">Сумма с ДС</th><th class="n">Принято</th><th class="n">Оплачено</th><th>Стадия</th></tr>
+   ${ks.map(k=>{const c=kcCalc(k);return `<tr class="click" onclick="go('kc','${k.id}')"><td>${esc(k.id)}</td><td>${esc(k.c)}</td><td>${esc(k.subj)}</td><td class="n">${rub(c.total)}${c.dsPend?`<br><span class="who">+${money(c.dsPend)} ДС</span>`:''}</td><td class="n">${rub(c.done)}</td><td class="n">${rub(c.paid)}</td><td>${chip(k.stage)}</td></tr>`;}).join('')||'<tr><td colspan="7" class="who">Нет договоров</td></tr>'}</table>
+   ${reg(S,'Договоры с контрагентами',src('sp','Договор с контрагентом','сумма, ДС, акты; оплачено - из 1С через заявки'))}</div>
+  <div class="card"><h2>Оформление документов</h2><div class="kan">${DOC_STAGES.map(st=>{const items=ds.filter(d=>d.stage===st);return `<div class="col"><h3><span>${st}</span><span>${items.length}</span></h3>${items.map(d=>`<div class="item ${alarmed.has(d.id)?'alarm':''}" onclick="go('doc','${d.id}')"><b>${esc(d.title)}</b>${esc(d.type)} · в стадии ${bdays(d.since)} р.д.${d.cp?'<br>ждём контрагента':''}</div>`).join('')}</div>`;}).join('')}</div>
+   ${reg(S,'Канбан документов',src('sp','Оформление документов','стадия, дата входа в стадию, задания БП'))}</div>`;
+}
+function docModal(id){
+  const d=DOCS.find(x=>x.id===id); if(!d) return '';
+  const k=d.k&&K(d.k);
+  return `<h2>${esc(d.title)}</h2><div class="sub">${esc(d.id)} · ${esc(d.type)} · ${k?`${esc(k.c)}, ${link(['kc',k.id],k.id)}`:esc(d.kc||'')}</div>
+  ${stages(DOC_STAGES,d.stage)}<div class="who">В стадии «${esc(d.stage)}» с ${fd(d.since)} (${bdays(d.since)} р.д.)</div>
+  <h2 style="margin-top:14px">Согласование (задания БП)</h2>${(d.ap||[]).map(a=>`<div class="ap"><span class="dot ${a.st==='ok'?'ok':a.st==='wait'?'wait':''}"></span>${esc(who(a.w))}, ${esc(role(a.w))} - ${a.st==='ok'?'согласовано '+fd(a.d):a.st==='wait'?`<b>ждём с ${fd(a.from)}, ${bdays(a.from)} р.д.</b>`:'следующий шаг'}</div>`).join('')}
+  ${d.cm?`<h2 style="margin-top:14px">Комментарии</h2>${d.cm.map(c=>`<div class="cm ${c.tense?'tense':''}"><small>${esc(who(c.w))} · ${esc(c.d)}${c.tense?' · ИИ: напряжённый тон':''}</small>${esc(c.t)}</div>`).join('')}`:''}
+  ${d.ap&&d.ap.some(a=>a.w===ME&&a.st==='wait')?`<div style="margin-top:14px;display:flex;gap:8px"><button class="btn" onclick="demoAct('Согласовано')">Согласовать</button><button class="btn ghost" onclick="demoAct('На доработку')">На доработку</button></div>`:''}`;
+}
+function demoAct(t){$('mBody').insertAdjacentHTML('beforeend',`<div class="banner blue" style="margin-top:12px">Прототип: здесь задание БП завершится с результатом «${esc(t)}», и документ уйдёт на следующий шаг маршрута.</div>`);}
+
+/* ---- Заявки на оплату ---- */
+function vPay(){
+  const p=P(state.pid), S='Заявки на оплату';
+  const pays=PAY.filter(x=>{const k=K(x.k);return k&&k.p===p.id;});
+  const al=alerts(p.id), alarmed=new Set(al.filter(a=>a.go[0]==='pay').map(a=>a.go[1]));
+  return `<h1>Заявки на оплату</h1><div class="sub">${esc(p.name)} · согласование на портале → оплата в 1С → статус возвращается на портал</div>
+  <div class="card"><div class="kan">${PAY_STAGES.map(st=>{const items=pays.filter(x=>x.stage===st);return `<div class="col"><h3><span>${st}</span><span>${money(sum(items))}</span></h3>${items.map(x=>`<div class="item ${alarmed.has(x.id)?'alarm':''}" onclick="go('pay','${x.id}')"><b>${esc(x.id)} · ${money(x.sum)}</b>${esc(K(x.k).c)}<br>${esc(x.w)}${x.c1&&x.c1!=='-'?`<br><span class="st c1">1С</span>${esc(x.c1)}`:''}</div>`).join('')}</div>`;}).join('')}</div>
+  ${reg(S,'Канбан заявок',src('sp','Заявка на оплату','стадия, сумма, договор, задания БП'))}${reg(S,'Статус оплаты',src('c1','1С:БИТ (казначейство)','статус платежа, дата оплаты'))}</div>`;
+}
+function payModal(id){
+  const x=PAY.find(y=>y.id===id); if(!x) return ''; const k=K(x.k), c=kcCalc(k);
+  return `<h2>${esc(x.id)}: ${rub(x.sum)}</h2><div class="sub">${esc(k.c)} · ${link(['kc',k.id],k.id)} · ${esc(x.w)} · статья «${esc(k.art)}»</div>
+  ${stages(PAY_STAGES.slice(0,5),x.stage==='Отклонена'?'':x.stage)}${x.stage==='Отклонена'?`<div class="banner" style="margin-top:8px">Отклонена ${fd(x.closed)}. Причина: <b>${x.reason||'не указана'}</b>. ИИ-помощник отметил это как симптом П2.</div>`:''}
+  ${x.task?`<div class="ap"><span class="dot wait"></span>${esc(who(x.task.w))}, ${esc(role(x.task.w))}: задание БП с ${fd(x.task.from)} ${x.task.t}, ответа нет</div>`:''}
+  <div class="kpis" style="margin-top:12px">
+   ${kpi('Заявка на оплату','Принято по актам',money(c.done),src('sp','Договор с контрагентом','акты, стадия «Принят»'))}
+   ${kpi('Заявка на оплату','Оплачено ранее',money(c.paid),src('c1','Заявки на оплату','статус из 1С'))}
+   ${kpi('Заявка на оплату','Статус в 1С',esc(x.c1),src('c1','1С:БИТ','статус платежа'))}
+  </div>`;
+}
+
+/* ---- Контрагенты ---- */
+function vKcs(){
+  const p=P(state.pid), S='Контрагенты на объекте', ks=KC.filter(k=>k.p===p.id);
+  return `<h1>Контрагенты на объекте</h1><div class="sub">${esc(p.name)} · объект ${esc(p.object.id)}</div>
+  <div class="card"><table><tr><th>Контрагент</th><th>Договор</th><th class="n">Сумма с ДС</th><th style="min-width:140px">Выполнено / оплачено</th><th class="n">Долг</th><th class="n">Аванс</th><th>Стадия</th></tr>
+  ${ks.map(k=>{const c=kcCalc(k), b=c.total||1;return `<tr class="click" onclick="go('kc','${k.id}')"><td><b>${esc(k.c)}</b><br><span class="who">${esc(k.kind)} · ${esc(k.subj)}</span></td><td>${esc(k.id)}</td><td class="n">${rub(c.total)}</td>
+   <td><div class="bars" title="Принято ${rub(c.done)}, оплачено ${rub(c.paid)}"><i style="width:${Math.min(c.paid,c.done)/b*100}%;background:var(--ok)"></i><i style="width:${c.debt/b*100}%;background:var(--bad)"></i><i style="width:${c.adv/b*100}%;background:var(--warn)"></i></div></td>
+   <td class="n" style="color:${c.debt?'var(--bad)':''}">${c.debt?rub(c.debt):'-'}</td><td class="n">${c.adv?rub(c.adv):'-'}</td><td>${chip(k.stage)}</td></tr>`;}).join('')||'<tr><td colspan="7" class="who">Нет договоров</td></tr>'}</table>
+  <div class="legend"><span><i style="background:var(--ok)"></i>принято и оплачено</span><span><i style="background:var(--bad)"></i>принято, не оплачено</span><span><i style="background:var(--warn)"></i>оплачено авансом</span></div>
+  ${reg(S,'Долг / аванс по контрагенту',src('calc','Принято по актам (СП) против оплачено (1С)'))}</div>`;
+}
+function vKc(id){
+  const k=K(id); if(!k) return vKcs(); state.pid=k.p; const c=kcCalc(k), S='Карточка контрагента на объекте', p=P(k.p);
+  const docs=DOCS.filter(d=>d.k===k.id), pays=PAY.filter(x=>x.k===k.id);
+  const al=alerts(p.id).filter(a=>(a.go[0]==='kc'&&a.go[1]===k.id)||(a.go[0]==='doc'&&docs.some(d=>d.id===a.go[1]))||(a.go[0]==='pay'&&pays.some(x=>x.id===a.go[1])));
+  const estTotal=k.est?sum(k.est,e=>e.q*e.pr):0;
+  return `<div class="who">${link(['kcs'],'← Контрагенты на объекте')}</div>
+  <h1>${esc(k.c)}</h1><div class="sub">${esc(k.kind)} · ${esc(k.subj)} · ${esc(p.name)} · договор ${esc(k.id)} · статья «${esc(k.art)}»</div>
+  ${stages(KC_STAGES,k.stage)}
+  <div class="card" style="margin-top:12px"><div class="kpis">
+   ${kpi(S,'Сумма договора',money(k.sum),src('sp','Договор с контрагентом','сумма'))}
+   ${kpi(S,'ДС',money(c.dsOn),src('sp','Договор с контрагентом','Σ действующих ДС'),c.dsPend?`+ ${money(c.dsPend)} в оформлении`:'')}
+   ${kpi(S,'Итого с ДС',money(c.total),src('calc','Сумма + действующие ДС'))}
+   ${kpi(S,'Принято по актам',money(c.done),src('sp','Оформление документов','КС-2, принятые ПТО'),c.onAcc?`+ ${money(c.onAcc)} на приёмке`:'')}
+   ${kpi(S,'Оплачено',money(c.paid),src('c1','Заявки на оплату','статус «Оплачено» из 1С'),c.inPay?`+ ${money(c.inPay)} в работе`:'')}
+   ${c.adv?kpi(S,'Аванс не закрыт',money(c.adv),src('calc','Оплачено − принято'),'','warn'):kpi(S,'Долг перед контрагентом',money(c.debt),src('calc','Принято − оплачено'),'',c.debt?'bad':'ok')}
+   ${kpi(S,'Остаток работ',money(c.left),src('calc','Итого с ДС − принято'))}
+  </div></div>
+  ${al.length?`<div class="card"><h2>Тревоги</h2>${al.map(alertHtml).join('')}</div>`:''}
+  <div class="grid g2">
+   <div class="card"><h2>Смета договора с учётом ДС</h2>${k.est?`<table><tr><th>Позиция</th><th>Ед.</th><th class="n">Кол-во</th><th class="n">Цена</th><th class="n">Сумма</th></tr>${k.est.map(e=>{const ds=e.ds&&(k.ds||[]).find(x=>x.n.startsWith(e.ds));return `<tr><td>${esc(e.n)}${ds?' '+chip(ds.stage==='Действует'?'ДС действует':'ДС на согласовании'):''}</td><td>${e.u}</td><td class="n">${e.q.toLocaleString('ru-RU')}</td><td class="n">${rub(e.pr)}</td><td class="n">${rub(e.q*e.pr)}</td></tr>`;}).join('')}<tr><td colspan="4"><b>Итого по смете</b></td><td class="n"><b>${rub(estTotal)}</b></td></tr></table>`:`<div class="who">Смета загружается из Excel при оформлении договора. В демо-данных для этого договора не заполнена.</div>`}
+     ${reg(S,'Смета договора',src('sp','Позиции сметы договора','импорт согласованной сметы из Excel (нужен образец)'))}</div>
+   <div class="card"><h2>Акты</h2>${(k.acts||[]).length?`<table>${k.acts.map(a=>`<tr><td>${esc(a.n)}<br><span class="who">${fd(a.d)}</span></td><td class="n">${rub(a.sum)}</td><td>${chip(a.st)}</td></tr>`).join('')}</table>`:'<div class="who">Актов нет</div>'}
+     <h2 style="margin-top:14px">Документы</h2>${docs.length?docs.map(d=>`<div class="ap">${link(['doc',d.id],d.title)} ${chip(d.stage)}</div>`).join(''):'<div class="who">-</div>'}</div>
+  </div>
+  <div class="card"><h2>Заявки на оплату</h2>${pays.length?`<table><tr><th>Заявка</th><th>Назначение</th><th class="n">Сумма</th><th>Стадия</th><th>1С</th></tr>${pays.map(x=>`<tr class="click" onclick="go('pay','${x.id}')"><td>${x.id}</td><td>${esc(x.w)}</td><td class="n">${rub(x.sum)}</td><td>${chip(x.stage)}</td><td>${esc(x.c1)}</td></tr>`).join('')}</table>`:'<div class="who">Заявок нет</div>'}</div>
+  <button class="btn ghost" onclick="botAsk('Что с подрядчиком ${esc(k.c).replace(/'/g,'')}')">Спросить ИИ-помощника об этом подрядчике</button>`;
+}
+
+/* ---- Витрина: себестоимость ---- */
+function vCost(){
+  const p=P(state.pid), S='Себестоимость и риски', rows=costRows(p.id), c=projCalc(p.id);
+  const mx=Math.max(...rows.map(r=>Math.max(r.plan,r.con+r.pend)),1);
+  return `<h1>Себестоимость и риски</h1><div class="sub">${esc(p.name)}</div>
+  <div class="banner"><b>Витрина.</b> Показывает направление. Сейчас план себестоимости живёт в Excel в Nextcloud; здесь он условный. Законтрактовано и оплачено - уже из СП и 1С. Полная модель (смета, риски, «стоимость компании») - v2, после образцов Excel.</div>
+  <div class="card"><div class="kpis">
+   ${kpi(S,'Договор с клиентом',money(c.cTotal),src('sp','Договор с клиентом','сумма + ДС'))}
+   ${kpi(S,'План себестоимости',money(p.budget),src('sp','Проект: план по статьям','импорт из Excel (v2)'))}
+   ${kpi(S,'Маржа по плану',money(c.margin),src('calc','Договор с клиентом − план себестоимости'),`${Math.round(c.margin/c.cTotal*100)}%`)}
+   ${kpi(S,'Не законтрактовано',money(Math.max(c.freeBudget,0)),src('calc','План − законтрактовано − в оформлении'))}
+  </div></div>
+  <div class="card"><h2>По статьям</h2><div class="legend"><span><i style="background:var(--accent)"></i>законтрактовано</span><span><i style="background:#9cc3ec"></i>в оформлении</span><span><i style="background:var(--bad)"></i>сверх плана</span><span>| - план</span></div>
+  <table><tr><th>Статья</th><th class="n">План</th><th class="n">Законтр.</th><th class="n">В оформл.</th><th class="n">Оплачено</th><th style="min-width:180px"></th></tr>
+  ${rows.map(r=>{const w=x=>x/mx*100, con=Math.min(r.con,r.plan), pend=Math.max(Math.min(r.con+r.pend,r.plan)-r.con,0), over=Math.max(r.over,0);
+   return `<tr><td>${esc(r.a)}${r.over>0?' <span class="chip bad">перерасход</span>':''}${r.con+r.pend===0&&!['Материалы ЭСТ','Накладные и прочее'].includes(r.a)?' <span class="chip warn">нет договора</span>':''}</td><td class="n">${money(r.plan)}</td><td class="n">${r.con?money(r.con):'-'}</td><td class="n">${r.pend?money(r.pend):'-'}</td><td class="n">${r.paid?money(r.paid):'-'}</td>
+   <td><div style="position:relative;height:12px;background:#f0f3f6;border-radius:3px"><div style="position:absolute;left:0;height:12px;width:${w(con)}%;background:var(--accent);border-radius:3px 0 0 3px"></div><div style="position:absolute;left:${w(con)}%;height:12px;width:${w(pend)}%;background:#9cc3ec"></div><div style="position:absolute;left:${w(r.plan)}%;height:12px;width:${w(over)}%;background:var(--bad)"></div><div style="position:absolute;left:${w(r.plan)}%;top:-3px;height:18px;width:2px;background:#1f2933"></div></div></td></tr>`;}).join('')}</table>
+  ${reg(S,'Статьи себестоимости',src('calc','План по статьям (Excel, v2) против договоров с контрагентами по полю «Статья»'))}</div>
+  <div class="card"><h2>Риски</h2>${alerts(p.id).filter(a=>a.c==='₽'||a.c==='П4').map(alertHtml).join('')||'<div class="who">Нет</div>'}</div>`;
+}
+
+/* ---- Витрина: объёмы ---- */
+function vVol(){
+  const p=P(state.pid), S='Объёмы и приёмка';
+  return `<h1>Объёмы и приёмка</h1><div class="sub">${esc(p.name)}</div>
+  <div class="banner"><b>Витрина.</b> Путь объёма: позиция ВОР заказчика → виды работ ЭСТ → отчёт субподрядчика → приёмка ПТО → закрытие заказчику. Сейчас каждый шаг - отдельный Excel. Модель сметы и ВОР - v2, после образцов файлов.</div>
+  ${p.vol.length?`<div class="card"><table><tr><th>Позиция ВОР заказчика</th><th>Виды работ ЭСТ</th><th>Подрядчик</th><th class="n">По смете</th><th class="n">Отчёт подрядчика</th><th class="n">Принято ПТО</th><th class="n">Закрыто заказчику</th></tr>
+  ${p.vol.map(v=>`<tr><td><b>${esc(v.pos)}</b>, ${v.u}</td><td>${v.works.map(esc).join('<br>')}</td><td>${link(['kc',v.k],K(v.k).c)}</td><td class="n">${v.q}</td><td class="n">${v.rep}</td><td class="n">${v.acc}${v.acc<v.rep?`<br><span class="chip warn">−${v.rep-v.acc} ждут приёмки</span>`:''}</td><td class="n">${v.cl}${v.cl<v.acc?`<br><span class="chip blue">${v.acc-v.cl} можно закрыть</span>`:''}</td></tr>`).join('')}</table>
+  ${reg(S,'Позиция ВОР заказчика',src('sp','ВОР заказчика','импорт сметы заказчика (v2)'))}${reg(S,'Отчёт подрядчика',src('sp','Отчёт о выполнении','подрядчик отчитывается по согласованной смете (v2)'))}${reg(S,'Принято ПТО',src('sp','Приёмка ПТО','задание БП инженеру ПТО (v2)'))}</div>
+  <div class="card"><h2>Что это даёт РП</h2><ul><li>Объём, который можно предъявить заказчику, виден сразу, без сводной таблицы.</li><li>Расхождение «подрядчик отчитался - ПТО не принял» видно по каждой позиции.</li><li>Связка позиции заказчика с видами работ ЭСТ хранится, поэтому закрытие идёт в наименованиях заказчика.</li></ul></div>`:'<div class="card who">Для этого проекта демо-данных по объёмам нет.</div>'}`;
+}
+
+/* ---- Откуда данные ---- */
+function vTrace(){
+  /* прогоняем все экраны, чтобы собрать реестр */
+  const keep=state.pid; PROJECTS.forEach(p=>{state.pid=p.id;vSummary();vDocs();vPay();vKcs();vCost();vVol();}); vProjects(); KC.forEach(k=>vKc(k.id)); state.pid=keep;
+  const rows=[...TRACE.values()]; const order=['Мои проекты','Мой проект','Договоры и документы','Заявки на оплату','Контрагенты на объекте','Карточка контрагента на объекте','Заявка на оплату','Себестоимость и риски','Объёмы и приёмка'];
+  rows.sort((a,b)=>order.indexOf(a.scr)-order.indexOf(b.scr));
+  const cnt=t=>rows.filter(r=>r.t===t).length;
+  return `<h1>Откуда данные</h1><div class="sub">Каждый показатель прототипа и его источник. Отсюда - список полей, которые обязаны быть в смарт-процессах.</div>
+  <div class="card"><div class="kpis">${Object.keys(SRC).map(t=>`<div class="kpi"><div class="l"><span class="st ${t}">${SRC[t]}</span></div><div class="v">${cnt(t)}</div></div>`).join('')}</div></div>
+  <div class="card"><table><tr><th>Экран</th><th>Показатель</th><th>Источник</th><th>Сущность и поле</th></tr>
+  ${rows.map(r=>`<tr><td>${esc(r.scr)}</td><td>${esc(r.label)}</td><td><span class="st ${r.t}">${SRC[r.t]}</span></td><td>${esc(r.e)}${r.f?': '+esc(r.f):''}</td></tr>`).join('')}</table></div>`;
+}
+
+/* ===================== ИИ-ПОМОЩНИК (шаблоны по демо-данным) ===================== */
+function botAnswer(q){
+  const p=P(state.pid), c=projCalc(p.id), al=alerts(p.id), ql=q.toLowerCase();
+  const kc=KC.filter(k=>k.p===p.id).find(k=>ql.includes(k.c.replace(/ООО |«|»/g,'').toLowerCase().split(' ')[0]));
+  if(kc){const x=kcCalc(kc), a=alerts(p.id).filter(z=>z.t.includes(kc.id)||z.t.includes(kc.c));
+    return {h:`<b>${esc(kc.c)}</b>, договор ${esc(kc.id)} (${esc(kc.stage.toLowerCase())}).<ul><li>Сумма с ДС ${money(x.total)}${x.dsPend?`, ещё ${money(x.dsPend)} ДС на согласовании`:''}.</li><li>Принято ${money(x.done)}${x.onAcc?`, на приёмке ПТО ${money(x.onAcc)}`:''}; оплачено ${money(x.paid)}.</li><li>${x.debt?`Долг ЭСТ перед подрядчиком <b>${money(x.debt)}</b>.`:x.adv?`Аванс не закрыт работами: ${money(x.adv)}.`:'Взаиморасчёты закрыты.'}</li>${a.map(z=>`<li>${z.c}: ${esc(z.t)}</li>`).join('')}</ul>`,
+      why:'Договор с контрагентом, акты, заявки на оплату (статусы 1С), задания БП'};}
+  if(/сводк|кратко|как дела|состояни/.test(ql)){
+    const late=p.sched.filter(s=>s.fe&&s.fe>s.pe), cur=p.sched.find(s=>s.pct>0&&s.pct<100);
+    return {h:`<b>${esc(p.name)}</b>, стадия «${esc(p.stage)}».<ul>
+      <li>Сроки: ${cur?`идёт «${esc(cur.n)}», ${cur.pct}%`:'активных этапов нет'}${late.length?`; с отставанием закрыт этап «${esc(late[0].n)}»`:''}. Сдача по плану ${fd(p.end)}.</li>
+      <li>Клиент: договор ${money(c.cTotal)}, получено ${money(c.inc)}, закрыто актами ${money(c.closed)}${c.unclosedAdv?`; незакрытый аванс ${money(c.unclosedAdv)}`:''}${c.cc.retention?`; гарантийное удержание ${money(c.clientOwes)} до ${fd(c.cc.retentionDue)}`:''}.</li>
+      <li>Подрядчики: законтрактовано ${money(c.contracted)} из плана ${money(p.budget)}${c.pending?`, в оформлении ещё ${money(c.pending)}`:''}; долг перед подрядчиками ${money(c.debt)}.</li></ul>
+      ${al.length?`Главное, на что смотреть (${al.length}):<ul>${al.slice(0,4).map(z=>`<li>${z.c}: ${esc(z.t)}</li>`).join('')}</ul>`:'Тревог нет.'}`,
+      why:'Проект, Этапы проекта, Договоры (СП), поступления и оплаты (1С), задания БП'};}
+  if(/узк|тревог|горит|риск|проблем|застр/.test(ql)){
+    return {h:al.length?`Нашёл ${al.length}:<ul>${al.map(z=>`<li><b>${z.c}</b> ${esc(z.t)}; ${esc(z.m.charAt(0).toLowerCase()+z.m.slice(1))}</li>`).join('')}</ul>`:'Узких мест не вижу.',why:'Правила П1-П6 по стадиям, датам и заданиям БП; П5 - оценка тона комментариев'};}
+  if(/сегодня|мне сделать|ждут|мои задан/.test(ql)){
+    const m=myTasks();
+    return {h:m.length?`Ждут вашего решения:<ul>${m.map(z=>`<li>${esc(z.t)} (${esc(P(z.p).name)}, с ${fd(z.from)})</li>`).join('')}</ul>${al.filter(z=>z.lvl==='bad').length?`И стоит напомнить коллегам по ${al.filter(z=>z.lvl==='bad').length} пунктам из тревог.`:''}`:'Ваших заданий нет.',why:'Задания БП, где исполнитель - вы'};}
+  if(/долг|должн|оплат|деньг/.test(ql)){
+    const ks=KC.filter(k=>k.p===p.id).map(k=>({k,x:kcCalc(k)})).filter(z=>z.x.debt);
+    return {h:`Долг ЭСТ перед подрядчиками ${money(c.debt)}:<ul>${ks.map(z=>`<li>${esc(z.k.c)}: ${money(z.x.debt)}${PAY.filter(y=>y.k===z.k.id&&!['Оплачена'].includes(y.stage)).map(y=>` - заявка ${y.id} «${esc(y.stage)}»`).join('')}</li>`).join('')}</ul>Клиент: получено ${money(c.inc)}, закрыто актами ${money(c.closed)}.`,why:'Акты (СП) против оплат (1С)'};}
+  return {h:'В прототипе я отвечаю по шаблонам на вопросы из подсказок и о подрядчиках по названию. На демо-стенде этот вопрос уйдёт в языковую модель вместе с данными проекта из СП.',why:'Прототип'};
+}
+const CHIPS=['Сводка по проекту','Где узкие места?','Что мне сделать сегодня?','Кому мы должны?','Что с подрядчиком ЭлектроСтрой?'];
+function botAsk(q){
+  openBot();
+  const a=botAnswer(q);
+  $('log').insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div><div class="msg b">${a.h}<div class="why">Источник: ${esc(a.why)}</div></div>`);
+  $('log').scrollTop=1e9;
+}
+function openBot(){ $('bot').classList.add('open'); $('fab').style.display='none'; $('botCtx').textContent=P(state.pid).name; }
+function closeBot(){ $('bot').classList.remove('open'); $('fab').style.display=''; }
+
+/* ===================== РОУТЕР ===================== */
+function route(){
+  const parts=location.hash.slice(1).split('/').map(decodeURIComponent).filter(Boolean);
+  let [v,id]=parts; v=v||'summary';
+  if(v==='summary'&&id&&P(id)) state.pid=id;
+  let html, nav=v;
+  if(v==='doc'){const d=DOCS.find(x=>x.id===id); if(d){state.pid=d.p; html=vDocs(); nav='docs'; openModal(docModal(id));}}
+  else if(v==='pay'&&id){const x=PAY.find(y=>y.id===id); if(x){state.pid=K(x.k).p; html=vPay(); openModal(payModal(id));}}
+  else if(v==='kc'){html=vKc(id); nav='kcs';}
+  if(!html){ closeModal(); html=({projects:vProjects,summary:vSummary,docs:vDocs,pay:vPay,kcs:vKcs,cost:vCost,vol:vVol,trace:vTrace}[v]||vSummary)(); }
+  $('view').innerHTML=html; renderNav(nav); $('psel').value=state.pid; $('botCtx').textContent=P(state.pid).name;
+  if(!['doc','pay'].includes(v)||!id) window.scrollTo(0,0);
+}
+function openModal(h){ $('mBody').innerHTML=h; $('modal').classList.add('open'); }
+function closeModal(){ $('modal').classList.remove('open'); }
+
+function init(){
+  $('psel').innerHTML=PROJECTS.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  $('psel').onchange=e=>{
+    state.pid=e.target.value;
+    const v=decodeURIComponent(location.hash.slice(1).split('/')[0]||'summary');
+    if(['summary','doc','pay','kc'].includes(v)) go('summary',state.pid); else route();
+  };
+  $('who').textContent=PEOPLE[ME].n;
+  $('trC').onchange=e=>{document.body.classList.toggle('trace',e.target.checked); $('trT').classList.toggle('on',e.target.checked);};
+  $('fab').onclick=$('botTop').onclick=()=>{ if(!$('log').children.length) $('log').innerHTML=`<div class="msg b">Я вижу данные смарт-процессов по вашим проектам: стадии, сроки, суммы, задания БП и комментарии. Спросите о проекте или выберите подсказку.<div class="why">В прототипе ответы собраны по шаблонам из демо-данных; на стенде - языковая модель.</div></div>`; openBot(); };
+  $('botX').onclick=closeBot;
+  $('chips').innerHTML=CHIPS.map(c=>`<button type="button">${c}</button>`).join('');
+  $('chips').onclick=e=>{ if(e.target.tagName==='BUTTON') botAsk(e.target.textContent); };
+  $('botF').onsubmit=e=>{e.preventDefault(); const q=$('botQ').value.trim(); if(q){botAsk(q); $('botQ').value='';}};
+  $('mX').onclick=()=>{ closeModal(); history.back(); };
+  $('modal').onclick=e=>{ if(e.target.id==='modal'){ closeModal(); history.back(); } };
+  window.onhashchange=route;
+  route();
+}
+if(typeof window!=='undefined' && document.getElementById('view')) init();
+</script>
+</body>
+</html>
