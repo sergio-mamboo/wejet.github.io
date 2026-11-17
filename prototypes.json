@@ -33,37 +33,20 @@
   ],
   "projects": [
     {
-      "id": "siber",
-      "name": "SIBER",
-      "url": "https://siber.ru/",
-      "description": "Отчёты по сделкам в Битрикс24"
-    },
-    {
       "id": "est",
       "name": "ЭСТ",
       "url": "https://est-group.ru/",
       "description": "Рабочее место руководителя проекта в Битрикс24"
+    },
+    {
+      "id": "siber",
+      "name": "SIBER",
+      "url": "https://siber.ru/",
+      "description": "Отчёты по сделкам в Битрикс24"
     }
   ],
   "prototypes": [
     {
-      "id": "siber-deal-reports",
-      "project": "siber",
-      "title": "Отчёты по сделкам",
-      "path": "siber/index.html",
-      "files": [
-        "siber/index.html",
-        "siber/weekly-report-prototype.html",
-        "siber/monthly-quarterly-report-prototype.html",
-        "siber/rop-report-prototype.html",
-        "siber/weekly-management-report-prototype.html",
-        "siber/monthly-quarterly-management-report-prototype.html",
-        "siber/summary-management-report-prototype.html"
-      ],
-      "description": "Группа отчётов по сделкам внутри интерфейса Битрикс24: отчёты для сотрудников коммерческой службы и для руководства.",
-      "status": "dev",
-      "statusDate": "2026-11-17",
-      "owner": "Сергей Смирнов",
       "screens": [
         {
           "label": "Сотрудники · Еженедельный",
@@ -90,35 +73,41 @@
           "url": "siber/#/summary-management"
         }
       ],
-      "links": []
+      "links": [],
+      "files": [
+        "siber/index.html",
+        "siber/weekly-report-prototype.html",
+        "siber/monthly-quarterly-report-prototype.html",
+        "siber/rop-report-prototype.html",
+        "siber/weekly-management-report-prototype.html",
+        "siber/monthly-quarterly-management-report-prototype.html",
+        "siber/summary-management-report-prototype.html"
+      ],
+      "id": "siber-deal-reports",
+      "project": "siber",
+      "title": "Отчёты по сделкам",
+      "path": "siber/index.html",
+      "description": "Группа отчётов по сделкам внутри интерфейса Битрикс24: отчёты для сотрудников коммерческой службы и для руководства.",
+      "status": "archive",
+      "statusDate": "2026-11-17",
+      "owner": "Сергей Смирнов"
     },
     {
+      "screens": [],
+      "links": [],
+      "files": [
+        "siber/reports-prototype-blue.html"
+      ],
       "id": "siber-deal-reports-blue",
       "project": "siber",
       "title": "Отчёты по сделкам НИЦ ТСО (синий вариант)",
       "path": "siber/reports-prototype-blue.html",
-      "files": [
-        "siber/reports-prototype-blue.html"
-      ],
       "description": "",
-      "status": "draft",
+      "status": "archive",
       "statusDate": "2026-11-17",
-      "owner": "",
-      "screens": [],
-      "links": []
+      "owner": ""
     },
     {
-      "id": "est-rp-workplace",
-      "project": "est",
-      "title": "Рабочее место руководителя проекта",
-      "path": "est/index.html",
-      "files": [
-        "est/index.html"
-      ],
-      "description": "Кликабельный прототип: проекты РП, договоры и документы, заявки на оплату, контрагенты на объекте, витрины себестоимости и объёмов, ИИ-помощник. Демо-данные синтетические.",
-      "status": "draft",
-      "statusDate": "2026-11-17",
-      "owner": "Сергей Смирнов",
       "screens": [
         {
           "label": "Мои проекты",
@@ -153,7 +142,18 @@
           "url": "est/#trace"
         }
       ],
-      "links": []
+      "links": [],
+      "files": [
+        "est/index.html"
+      ],
+      "id": "est-rp-workplace",
+      "project": "est",
+      "title": "Рабочее место руководителя проекта",
+      "path": "est/index.html",
+      "description": "Кликабельный прототип: проекты РП, договоры и документы, заявки на оплату, контрагенты на объекте, витрины себестоимости и объёмов, ИИ-помощник. Демо-данные синтетические.",
+      "status": "draft",
+      "statusDate": "2026-11-17",
+      "owner": "Сергей Смирнов"
     }
   ]
 }
