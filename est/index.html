@@ -58,6 +58,7 @@ td{border-bottom:1px solid #eef1f4;padding:7px 8px;vertical-align:top}
 td.n,th.n{text-align:right;white-space:nowrap}
 tr.click{cursor:pointer} tr.click:hover td{background:#f5f9fd}
 .chip{display:inline-block;font-size:12px;border-radius:10px;padding:1px 8px;background:#edf1f5;color:#35424f;white-space:nowrap}
+.chip.pstage{background:#2e9e4f;color:#fff}
 .chip.ok{background:var(--ok-soft);color:#1f6e37}.chip.warn{background:var(--warn-soft);color:#8a5400}.chip.bad{background:var(--bad-soft);color:#9b1f1f}.chip.blue{background:var(--accent-soft);color:#0a4f97}
 .stages{display:flex;flex-wrap:wrap;gap:2px;margin:6px 0 2px}
 .stages span{font-size:12px;padding:3px 10px;background:#e4e9ee;color:#55626f;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%)}
@@ -448,7 +449,7 @@ function vProjects(){
   return `<h1>Мои проекты</h1><div class="sub">${PEOPLE[ME].n}, ${PEOPLE[ME].r.toLowerCase()}</div>
   <div class="grid g3">${PROJECTS.map(p=>{
     const c=projCalc(p.id), al=alerts(p.id), tot=cdays(p.start,p.end), el=Math.min(Math.max(cdays(p.start),0),tot);
-    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><h2 style="margin:0">${link(['summary',p.id],p.name)}</h2><span style="flex:none;margin-top:2px">${chip(p.stage)}</span></div>
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><h2 style="margin:0">${link(['summary',p.id],p.name)}</h2><span class="chip pstage" style="flex:none;margin-top:2px">${esc(p.stage)}</span></div>
     <div class="sub" style="margin:4px 0 10px">${esc(p.client)} · ${fd(p.start)} - ${fd(p.end)}</div>
     <div class="kpis">
       ${kpi(S,'Договор с клиентом',money(c.cTotal),src('sp','Договор с клиентом','сумма + действующие ДС'))}
