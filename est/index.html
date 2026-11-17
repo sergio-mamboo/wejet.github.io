@@ -448,7 +448,7 @@ function vProjects(){
   return `<h1>Мои проекты</h1><div class="sub">${PEOPLE[ME].n}, ${PEOPLE[ME].r.toLowerCase()}</div>
   <div class="grid g3">${PROJECTS.map(p=>{
     const c=projCalc(p.id), al=alerts(p.id), tot=cdays(p.start,p.end), el=Math.min(Math.max(cdays(p.start),0),tot);
-    return `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><h2 style="margin:0">${link(['summary',p.id],p.name)}</h2>${chip(p.stage)}</div>
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><h2 style="margin:0">${link(['summary',p.id],p.name)}</h2><span style="flex:none;margin-top:2px">${chip(p.stage)}</span></div>
     <div class="sub" style="margin:4px 0 10px">${esc(p.client)} · ${fd(p.start)} - ${fd(p.end)}</div>
     <div class="kpis">
       ${kpi(S,'Договор с клиентом',money(c.cTotal),src('sp','Договор с клиентом','сумма + действующие ДС'))}
