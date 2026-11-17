@@ -3,34 +3,685 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>Прототипы WeJET</title>
 <style>
-  :root { --bg:#f5f7fa; --card:#fff; --text:#1f2937; --muted:#6b7280; --accent:#0094FF; --border:#e5e7eb; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#111827; --card:#1f2937; --text:#f3f4f6; --muted:#9ca3af; --border:#374151; } }
+  :root {
+    --accent:#0094FF; --accent-dark:#0078E7; --accent-soft:#E6F4FF; --line:#CCE9FF;
+    --bg:#F5FAFB; --card:#FFFFFF; --text:#1B2433; --muted:#667085; --danger:#D92D20;
+    --shadow:0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --accent:#3AAEFF; --accent-dark:#62BEFF; --accent-soft:#12304A; --line:#23384D;
+      --bg:#0E1621; --card:#152131; --text:#E6EDF5; --muted:#93A1B3; --danger:#FF6B5E;
+      --shadow:none;
+    }
+  }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
-  main { max-width:720px; margin:0 auto; padding:48px 16px; }
-  h1 { font-size:28px; margin:0 0 4px; }
-  .sub { color:var(--muted); margin:0 0 32px; }
-  h2 { font-size:18px; margin:0 0 8px; }
-  .project { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 24px; margin-bottom:16px; }
-  ul { margin:0; padding-left:20px; }
+  html, body { margin:0; }
+  body { background:var(--bg); color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; }
   a { color:var(--accent); text-decoration:none; }
   a:hover { text-decoration:underline; }
+  button, input, select, textarea { font:inherit; color:inherit; }
+  .wrap { max-width:960px; margin:0 auto; padding:0 16px; }
+
+  header.top { background:var(--card); border-bottom:1px solid var(--line); }
+  header.top .wrap { display:flex; align-items:center; gap:12px; min-height:60px; flex-wrap:wrap; }
+  .brand { font-weight:800; font-size:20px; letter-spacing:.2px; color:var(--text); }
+  .brand b { color:var(--accent); }
+  .brand small { font-weight:500; color:var(--muted); font-size:15px; margin-left:8px; }
+  .spacer { flex:1; }
+  .admin-badge { font-size:12px; font-weight:600; color:var(--accent-dark); background:var(--accent-soft); border-radius:999px; padding:3px 10px; }
+
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:24px 0 8px; }
+  .search { flex:1 1 240px; min-width:0; padding:9px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card); }
+  .search:focus { outline:2px solid var(--accent); outline-offset:-1px; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin:0 0 20px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:var(--card); border-radius:999px; padding:4px 11px; font-size:13px; cursor:pointer; color:var(--muted); }
+  .chip[aria-pressed="true"] { color:var(--text); border-color:var(--accent); background:var(--accent-soft); }
+  .dot { width:8px; height:8px; border-radius:50%; flex:none; }
+  .chip .n { font-variant-numeric:tabular-nums; opacity:.7; }
+
+  section.project { margin:0 0 28px; }
+  .project-head { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:0 0 10px; }
+  .project-head h2 { margin:0; font-size:20px; color:var(--accent-dark); }
+  .project-head .desc { color:var(--muted); font-size:14px; }
+  .project-head .ext { font-size:13px; }
+
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:0 0 10px; box-shadow:var(--shadow); }
+  .card.archived { opacity:.7; }
+  .card-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .card-head .title { font-weight:650; font-size:16px; color:var(--text); }
+  .card-head .title:hover { color:var(--accent); }
+  .badge { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; border-radius:999px; padding:2px 10px; border:1px solid; white-space:nowrap; }
+  .meta { color:var(--muted); font-size:13px; margin-top:4px; display:flex; gap:4px 14px; flex-wrap:wrap; }
+  .card p.d { margin:8px 0 0; }
+  .row { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; align-items:center; }
+  .row .lbl { font-size:12px; color:var(--muted); margin-right:2px; }
+  .pill { display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:8px; font-size:13px; overflow:hidden; background:var(--bg); }
+  .pill a { padding:3px 9px; color:var(--text); }
+  .pill a:hover { color:var(--accent); text-decoration:none; }
+  .pill button { border:0; border-left:1px solid var(--line); background:transparent; padding:3px 7px; cursor:pointer; color:var(--muted); display:flex; }
+  .pill button:hover { color:var(--accent); }
+
+  .iconbtn { border:1px solid transparent; background:transparent; border-radius:8px; padding:5px; cursor:pointer; color:var(--muted); display:inline-flex; align-items:center; gap:4px; font-size:13px; }
+  .iconbtn:hover { color:var(--accent); background:var(--accent-soft); }
+  .iconbtn.danger:hover { color:var(--danger); background:transparent; border-color:var(--danger); }
+  .iconbtn:disabled { opacity:.3; cursor:default; background:transparent; }
+  svg.i { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  details.hist { margin-top:10px; font-size:13px; }
+  details.hist summary { cursor:pointer; color:var(--muted); }
+  details.hist ol { list-style:none; margin:8px 0 0; padding:0; border-left:2px solid var(--line); }
+  details.hist li { padding:3px 0 3px 12px; display:flex; gap:10px; flex-wrap:wrap; }
+  details.hist .when { color:var(--muted); font-variant-numeric:tabular-nums; min-width:80px; }
+  details.hist .who { color:var(--muted); }
+
+  .btn { border:1px solid var(--accent); background:var(--accent); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-weight:600; }
+  .btn:hover { background:var(--accent-dark); border-color:var(--accent-dark); }
+  .btn.ghost { background:transparent; color:var(--accent); }
+  .btn.ghost:hover { background:var(--accent-soft); }
+  .btn:disabled { opacity:.5; cursor:default; }
+  .linkbtn { border:0; background:none; color:var(--muted); cursor:pointer; padding:0; font-size:13px; }
+  .linkbtn:hover { color:var(--accent); }
+
+  .empty { color:var(--muted); text-align:center; padding:40px 0; }
+  .panel { border:1px dashed var(--line); border-radius:12px; padding:14px 18px; margin:0 0 24px; }
+  .panel h3 { margin:0 0 6px; font-size:15px; }
+  .panel ul { margin:0; padding-left:18px; font-size:14px; }
+  .panel li { margin:3px 0; }
+
+  footer { color:var(--muted); font-size:13px; padding:24px 0 96px; display:flex; gap:16px; flex-wrap:wrap; }
+
+  .savebar { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:2px solid var(--accent); padding:10px 0; z-index:10; }
+  .savebar .wrap { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+  dialog { border:1px solid var(--line); border-radius:14px; padding:0; width:min(640px, calc(100vw - 32px)); background:var(--card); color:var(--text); }
+  dialog::backdrop { background:rgba(10,20,35,.45); }
+  dialog form { padding:20px 22px; }
+  dialog h3 { margin:0 0 14px; font-size:18px; }
+  .field { display:flex; flex-direction:column; gap:4px; margin:0 0 12px; }
+  .field label { font-size:13px; font-weight:600; }
+  .field .hint { font-size:12px; color:var(--muted); }
+  .field input, .field select, .field textarea { padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); width:100%; }
+  .field textarea { min-height:70px; resize:vertical; font-family:inherit; }
+  .field textarea.mono { font:13px/1.4 ui-monospace,Menlo,Consolas,monospace; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:0 12px; }
+  @media (max-width:560px) { .grid2 { grid-template-columns:1fr; } }
+  .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:6px; flex-wrap:wrap; }
+  .err { color:var(--danger); font-size:13px; min-height:1em; margin:0 0 8px; }
+  ol.steps { padding-left:20px; margin:0 0 14px; font-size:14px; }
+
+  .toast { position:fixed; left:50%; bottom:76px; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:8px 16px; border-radius:10px; font-size:14px; z-index:20; opacity:0; transition:opacity .2s; pointer-events:none; max-width:calc(100vw - 32px); }
+  .toast.show { opacity:1; }
 </style>
 </head>
 <body>
-<main>
-  <h1>Прототипы WeJET</h1>
-  <p class="sub">Интерактивные прототипы для клиентов</p>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>We</b>JET<small>Прототипы</small></div>
+    <div class="spacer"></div>
+    <div id="adminArea"></div>
+  </div>
+</header>
 
-  <section class="project">
-    <h2><a href="https://siber.ru/" target="_blank" rel="noopener">SIBER</a></h2>
-    <ul>
-      <li><a href="siber/">Отчёты по сделкам</a></li>
-      <li><a href="siber/reports-prototype-blue.html">Отчёты по сделкам НИЦ ТСО (синий вариант)</a></li>
-    </ul>
-  </section>
+<main class="wrap">
+  <div class="toolbar">
+    <input id="q" class="search" type="search" placeholder="Поиск по названию, описанию, клиенту…" autocomplete="off">
+    <span id="adminTools"></span>
+  </div>
+  <div id="chips" class="chips"></div>
+  <div id="unlisted"></div>
+  <div id="list"><p class="empty">Загрузка…</p></div>
 </main>
+
+<footer class="wrap" id="footer"></footer>
+<div id="savebar"></div>
+<dialog id="dlg"></dialog>
+<div id="toast" class="toast" role="status"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const REPO = 'sergio-mamboo/wejet.github.io';
+  const BRANCH = 'main';
+  const DATA_PATH = 'prototypes.json';
+  const API = 'https://api.github.com/repos/' + REPO;
+  const TOKEN_KEY = 'wejet-prototypes-token';
+
+  const state = {
+    data: { statuses: [], projects: [], prototypes: [] },
+    history: {},
+    generated: null,
+    admin: false,
+    token: null,
+    login: '',
+    sha: null,
+    repoFiles: null,
+    changes: [],
+    q: '',
+    hidden: new Set(['archive']),
+  };
+
+  // ---------- helpers ----------
+  const $ = (s) => document.querySelector(s);
+  function el(tag, props, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(props || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') n.className = v;
+      else if (k === 'text') n.textContent = v;
+      else if (k === 'html') n.innerHTML = v; // только для константных SVG
+      else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+      else if (k === 'style') n.style.cssText = v;
+      else n.setAttribute(k, v === true ? '' : v);
+    }
+    for (const kid of kids.flat()) if (kid != null && kid !== false) n.append(kid);
+    return n;
+  }
+  const ICONS = {
+    copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+    ext: '<path d="M14 4h6v6"/><path d="M10 14 20 4"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+    del: '<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/>',
+    up: '<path d="m6 15 6-6 6 6"/>',
+    down: '<path d="m6 9 6 6 6-6"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+  };
+  const icon = (name) => el('span', { html: `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`, style: 'display:inline-flex' });
+  function iconBtn(name, title, onclick, extra = {}) {
+    return el('button', { type: 'button', class: 'iconbtn' + (extra.danger ? ' danger' : ''), title, 'aria-label': title, onclick, disabled: extra.disabled }, icon(name), extra.label || null);
+  }
+
+  const pad = (n) => String(n).padStart(2, '0');
+  function fmtDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso.length === 10 ? iso + 'T12:00:00' : iso);
+    if (isNaN(d)) return iso;
+    return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+  }
+  function plural(n, one, few, many) { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many; }
+  function today() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+  function slug(s) {
+    const map = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'c',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya' };
+    return String(s).toLowerCase().split('').map(c => map[c] ?? c).join('').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+  }
+  function safeHref(u) {
+    u = String(u || '').trim();
+    if (/^https?:\/\//i.test(u)) return u;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(u) || u.startsWith('//')) return null; // javascript:, data: и т.п.
+    return u || null;
+  }
+  function pageHref(path) { return path.replace(/(^|\/)index\.html$/, '$1') || './'; }
+  const absUrl = (rel) => new URL(rel, location.href).href;
+
+  function toast(msg, ms = 2600) {
+    const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), ms);
+  }
+  async function copy(text) {
+    try { await navigator.clipboard.writeText(text); }
+    catch {
+      const ta = el('textarea', { style: 'position:fixed;opacity:0' }); ta.value = text; document.body.append(ta); ta.select();
+      try { document.execCommand('copy'); } catch {} ta.remove();
+    }
+    toast('Ссылка скопирована');
+  }
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    del(k) { try { localStorage.removeItem(k); } catch {} },
+  };
+
+  // ---------- base64 / GitHub API ----------
+  function bytesToB64(bytes) {
+    let s = ''; const CH = 0x8000;
+    for (let i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+    return btoa(s);
+  }
+  function b64ToText(b64) {
+    const bin = atob(b64.replace(/\s/g, ''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  async function gh(path, opts = {}) {
+    const res = await fetch(/^https:/.test(path) ? path : API + path, {
+      ...opts,
+      headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', Authorization: 'Bearer ' + state.token, ...(opts.headers || {}) },
+      cache: 'no-store',
+    });
+    if (res.status === 404) return null;
+    const body = res.status === 204 ? null : await res.json().catch(() => null);
+    if (!res.ok) {
+      const e = new Error((body && body.message) || ('HTTP ' + res.status)); e.status = res.status; throw e;
+    }
+    return body;
+  }
+  const encPath = (p) => p.split('/').map(encodeURIComponent).join('/');
+  const getFile = (p) => gh(`/contents/${encPath(p)}?ref=${BRANCH}`);
+  const putFile = (p, b64, message, sha) => gh(`/contents/${encPath(p)}`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, content: b64, branch: BRANCH, ...(sha ? { sha } : {}) }),
+  });
+  function apiErr(e) {
+    if (e.status === 401) return 'Токен недействителен или истёк.';
+    if (e.status === 403) return 'У токена нет права записи (Contents: Read and write).';
+    if (e.status === 409 || e.status === 422) return 'Файл изменили параллельно. Обновите страницу.';
+    return e.message || String(e);
+  }
+
+  // ---------- data ----------
+  const statusById = (id) => state.data.statuses.find(s => s.id === id) || { id, label: id || '—', color: '#8A94A6' };
+  const projectById = (id) => state.data.projects.find(p => p.id === id);
+  const filesOf = (p) => (p.files && p.files.length ? p.files : [p.path]).filter(Boolean);
+  function commitsOf(p) {
+    const seen = new Map();
+    for (const f of filesOf(p)) for (const c of (state.history[f] || [])) if (!seen.has(c.sha)) seen.set(c.sha, c);
+    return [...seen.values()].sort((a, b) => b.date.localeCompare(a.date));
+  }
+  function matches(p) {
+    if (state.hidden.has(p.status)) return false;
+    if (!state.q) return true;
+    const pr = projectById(p.project);
+    const hay = [p.title, p.description, p.owner, p.path, pr && pr.name, ...(p.screens || []).map(s => s.label)].join(' ').toLowerCase();
+    return state.q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+  }
+  function change(msg) { state.changes.push(msg); render(); }
+
+  // ---------- render ----------
+  function render() {
+    renderAdminArea(); renderChips(); renderUnlisted(); renderList(); renderSavebar(); renderFooter();
+  }
+
+  function renderAdminArea() {
+    const a = $('#adminArea'); a.replaceChildren();
+    const t = $('#adminTools'); t.replaceChildren();
+    if (!state.admin) return;
+    a.append(el('span', { class: 'admin-badge', text: 'Редактирование' + (state.login ? ' · ' + state.login : '') }), ' ',
+      el('button', { type: 'button', class: 'linkbtn', text: 'Выйти', onclick: logout }));
+    t.append(el('button', { type: 'button', class: 'btn ghost', onclick: () => projectForm() }, 'Добавить клиента'));
+  }
+
+  function renderChips() {
+    const box = $('#chips'); box.replaceChildren();
+    const counts = {};
+    for (const p of state.data.prototypes) counts[p.status] = (counts[p.status] || 0) + 1;
+    for (const s of state.data.statuses) {
+      const on = !state.hidden.has(s.id);
+      box.append(el('button', {
+        type: 'button', class: 'chip', 'aria-pressed': String(on), title: on ? 'Скрыть' : 'Показать',
+        onclick: () => { on ? state.hidden.add(s.id) : state.hidden.delete(s.id); render(); },
+      }, el('span', { class: 'dot', style: `background:${s.color}` }), s.label, el('span', { class: 'n', text: String(counts[s.id] || 0) })));
+    }
+  }
+
+  function renderUnlisted() {
+    const box = $('#unlisted'); box.replaceChildren();
+    if (!state.admin) return;
+    const all = state.repoFiles || Object.keys(state.history);
+    const used = new Set(state.data.prototypes.flatMap(p => [p.path, ...filesOf(p)]));
+    const free = all.filter(f => /\.html?$/i.test(f) && f !== 'index.html' && !used.has(f)).sort();
+    if (!free.length) return;
+    box.append(el('div', { class: 'panel' },
+      el('h3', { text: `Файлы без карточки (${free.length})` }),
+      el('ul', {}, free.map(f => el('li', {},
+        el('a', { href: pageHref(f), target: '_blank', rel: 'noopener', text: f }), ' · ',
+        el('button', { type: 'button', class: 'linkbtn', text: 'создать карточку', onclick: () => protoForm(null, { path: f, project: f.includes('/') ? f.split('/')[0] : '' }) }))))));
+  }
+
+  function renderList() {
+    const list = $('#list'); list.replaceChildren();
+    const { projects, prototypes } = state.data;
+    let shown = 0;
+    projects.forEach((pr, pi) => {
+      const items = prototypes.filter(p => p.project === pr.id);
+      const vis = items.filter(matches);
+      if (!vis.length && !state.admin) return;
+      shown += vis.length;
+      const site = safeHref(pr.url);
+      const head = el('div', { class: 'project-head' },
+        el('h2', { text: pr.name }),
+        site ? el('a', { class: 'ext', href: site, target: '_blank', rel: 'noopener', text: site.replace(/^https?:\/\/|\/$/g, '') }) : null,
+        pr.description ? el('span', { class: 'desc', text: pr.description }) : null,
+        el('span', { class: 'spacer' }),
+        state.admin ? [
+          iconBtn('plus', 'Добавить прототип', () => protoForm(null, { project: pr.id }), { label: 'Прототип' }),
+          iconBtn('up', 'Выше', () => moveProject(pi, -1), { disabled: pi === 0 }),
+          iconBtn('down', 'Ниже', () => moveProject(pi, 1), { disabled: pi === projects.length - 1 }),
+          iconBtn('edit', 'Изменить клиента', () => projectForm(pr)),
+          iconBtn('del', 'Удалить клиента', () => deleteProject(pr), { danger: true }),
+        ] : null);
+      const sec = el('section', { class: 'project' }, head);
+      if (!vis.length) sec.append(el('p', { class: 'empty', style: 'padding:8px 0', text: items.length ? 'Все прототипы скрыты фильтром' : 'Прототипов пока нет' }));
+      vis.forEach(p => sec.append(card(p, items)));
+      list.append(sec);
+    });
+    const orphans = prototypes.filter(p => !projectById(p.project) && matches(p));
+    if (orphans.length) {
+      shown += orphans.length;
+      list.append(el('section', { class: 'project' }, el('div', { class: 'project-head' }, el('h2', { text: 'Без клиента' })), orphans.map(p => card(p, orphans))));
+    }
+    if (!shown && !state.admin) list.append(el('p', { class: 'empty', text: state.data.prototypes.length ? 'Ничего не найдено. Измените поиск или фильтр статусов.' : 'Прототипов пока нет.' }));
+    if (!projects.length && state.admin) list.append(el('p', { class: 'empty', text: 'Добавьте первого клиента.' }));
+  }
+
+  function card(p, siblings) {
+    const st = statusById(p.status);
+    const commits = commitsOf(p);
+    const href = safeHref(pageHref(p.path || ''));
+    const idx = siblings.indexOf(p);
+
+    const statusEl = state.admin
+      ? el('select', { class: 'badge', style: `color:${st.color};border-color:${st.color};background:transparent;cursor:pointer`, 'aria-label': 'Статус',
+          onchange: (e) => { const old = st.label; p.status = e.target.value; p.statusDate = today(); change(`«${p.title}»: статус ${old} → ${statusById(p.status).label}`); } },
+          state.data.statuses.map(s => el('option', { value: s.id, selected: s.id === p.status, text: s.label })))
+      : el('span', { class: 'badge', style: `color:${st.color};border-color:${st.color}` }, el('span', { class: 'dot', style: `background:${st.color}` }), st.label);
+
+    const head = el('div', { class: 'card-head' },
+      href ? el('a', { class: 'title', href, target: '_blank', rel: 'noopener', text: p.title }) : el('span', { class: 'title', text: p.title }),
+      statusEl,
+      el('span', { class: 'spacer' }),
+      href ? iconBtn('copy', 'Скопировать ссылку', () => copy(absUrl(href))) : null,
+      href ? el('a', { class: 'iconbtn', href, target: '_blank', rel: 'noopener', title: 'Открыть', 'aria-label': 'Открыть' }, icon('ext')) : null,
+      state.admin ? [
+        iconBtn('up', 'Выше', () => moveProto(p, siblings, -1), { disabled: idx === 0 }),
+        iconBtn('down', 'Ниже', () => moveProto(p, siblings, 1), { disabled: idx === siblings.length - 1 }),
+        iconBtn('edit', 'Изменить', () => protoForm(p)),
+        iconBtn('del', 'Удалить карточку', () => deleteProto(p), { danger: true }),
+      ] : null);
+
+    const meta = el('div', { class: 'meta' },
+      el('span', { text: commits.length ? `Изменён ${fmtDate(commits[0].date)}` : 'Дата изменения появится после публикации' }),
+      p.statusDate ? el('span', { text: `Статус с ${fmtDate(p.statusDate)}` }) : null,
+      p.owner ? el('span', { text: `Ответственный: ${p.owner}` }) : null);
+
+    const screens = (p.screens || []).map(s => ({ ...s, href: safeHref(s.url) })).filter(s => s.href);
+    const links = (p.links || []).map(l => ({ ...l, href: safeHref(l.url) })).filter(l => l.href);
+
+    return el('article', { class: 'card' + (p.status === 'archive' ? ' archived' : '') },
+      head, meta,
+      p.description ? el('p', { class: 'd', text: p.description }) : null,
+      screens.length ? el('div', { class: 'row' }, el('span', { class: 'lbl', text: 'Экраны:' }),
+        screens.map(s => el('span', { class: 'pill' },
+          el('a', { href: s.href, target: '_blank', rel: 'noopener', text: s.label }),
+          el('button', { type: 'button', title: 'Скопировать ссылку', 'aria-label': 'Скопировать ссылку на ' + s.label, onclick: () => copy(absUrl(s.href)) }, icon('copy'))))) : null,
+      links.length ? el('div', { class: 'row' }, el('span', { class: 'lbl', text: 'Ссылки:' }),
+        links.map(l => el('span', { class: 'pill' }, el('a', { href: l.href, target: '_blank', rel: 'noopener', text: l.label + ' ↗' })))) : null,
+      commits.length ? el('details', { class: 'hist' },
+        el('summary', { text: `История изменений (${commits.length})` }),
+        el('ol', {}, commits.slice(0, 15).map(c => el('li', {},
+          el('span', { class: 'when', text: fmtDate(c.date) }),
+          el('a', { href: `https://github.com/${REPO}/commit/${c.sha}`, target: '_blank', rel: 'noopener', text: c.message }),
+          el('span', { class: 'who', text: c.author }))))) : null);
+  }
+
+  function renderSavebar() {
+    const bar = $('#savebar'); bar.replaceChildren();
+    if (!state.admin || !state.changes.length) return;
+    const n = state.changes.length;
+    bar.append(el('div', { class: 'savebar' }, el('div', { class: 'wrap' },
+      el('span', { text: `Несохранённых изменений: ${n}`, title: state.changes.join('\n') }),
+      el('span', { class: 'spacer' }),
+      el('button', { type: 'button', class: 'btn ghost', text: 'Отменить', onclick: discard }),
+      el('button', { type: 'button', class: 'btn', text: 'Сохранить', id: 'saveBtn', onclick: save }))));
+  }
+
+  function renderFooter() {
+    const f = $('#footer'); f.replaceChildren();
+    if (state.generated) f.append(el('span', { text: `Сайт собран ${fmtDate(state.generated)}` }));
+    f.append(el('span', { class: 'spacer' }));
+    if (!state.admin) f.append(el('button', { type: 'button', class: 'linkbtn', text: 'Администрирование', onclick: loginForm }));
+  }
+
+  // ---------- admin actions ----------
+  function moveProject(i, d) {
+    const a = state.data.projects; [a[i], a[i + d]] = [a[i + d], a[i]];
+    change(`Порядок клиентов: ${a[i + d].name}`);
+  }
+  function moveProto(p, siblings, d) {
+    const other = siblings[siblings.indexOf(p) + d]; if (!other) return;
+    const a = state.data.prototypes, i = a.indexOf(p), j = a.indexOf(other);
+    [a[i], a[j]] = [a[j], a[i]];
+    change(`Порядок прототипов: ${p.title}`);
+  }
+  function deleteProject(pr) {
+    const n = state.data.prototypes.filter(p => p.project === pr.id).length;
+    if (!confirm(`Удалить клиента «${pr.name}»${n ? ` и ${n} карточек прототипов` : ''}?\nФайлы прототипов в репозитории останутся.`)) return;
+    state.data.projects = state.data.projects.filter(x => x !== pr);
+    state.data.prototypes = state.data.prototypes.filter(p => p.project !== pr.id);
+    change(`Удалён клиент ${pr.name}`);
+  }
+  function deleteProto(p) {
+    if (!confirm(`Удалить карточку «${p.title}»?\nФайлы прототипа в репозитории останутся.`)) return;
+    state.data.prototypes = state.data.prototypes.filter(x => x !== p);
+    change(`Удалена карточка ${p.title}`);
+  }
+
+  // ---------- dialogs ----------
+  function openDialog(title, body, onSubmit, submitText = 'Готово') {
+    const dlg = $('#dlg');
+    const err = el('p', { class: 'err' });
+    const form = el('form', { method: 'dialog', novalidate: true },
+      el('h3', { text: title }), body, err,
+      el('div', { class: 'actions' },
+        el('button', { type: 'button', class: 'btn ghost', text: 'Отмена', onclick: () => dlg.close() }),
+        el('button', { type: 'submit', class: 'btn', text: submitText })));
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); err.textContent = '';
+      const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+      try { const msg = await onSubmit(form); if (msg) err.textContent = msg; else dlg.close(); }
+      catch (ex) { err.textContent = apiErr(ex); }
+      finally { btn.disabled = false; }
+    });
+    dlg.replaceChildren(form);
+    dlg.showModal();
+    const first = form.querySelector('input:not([type=file]):not([readonly]),textarea,select'); if (first) first.focus();
+    return form;
+  }
+  function field(label, input, hint) {
+    return el('div', { class: 'field' }, el('label', { text: label }), input, hint ? el('span', { class: 'hint', text: hint }) : null);
+  }
+  const val = (form, name) => (form.elements[name].value || '').trim();
+  const pairsToText = (arr) => (arr || []).map(x => `${x.label} | ${x.url}`).join('\n');
+  function textToPairs(t) {
+    return t.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const i = l.lastIndexOf('|');
+      return i < 0 ? { label: l, url: l } : { label: l.slice(0, i).trim(), url: l.slice(i + 1).trim() };
+    });
+  }
+
+  function loginForm() {
+    const body = el('div', {},
+      el('p', { style: 'margin:0 0 10px;font-size:14px', text: 'Правки сохраняются коммитом в репозиторий, поэтому нужен токен GitHub с доступом только к этому репозиторию.' }),
+      el('ol', { class: 'steps' },
+        el('li', {}, 'Откройте ', el('a', { href: 'https://github.com/settings/personal-access-tokens/new', target: '_blank', rel: 'noopener', text: 'создание fine-grained токена' }), '.'),
+        el('li', { text: 'Repository access → Only select repositories → wejet.github.io.' }),
+        el('li', { text: 'Permissions → Repository permissions → Contents: Read and write.' }),
+        el('li', { text: 'Скопируйте токен и вставьте ниже. Он сохранится только в этом браузере.' })),
+      field('Токен', el('input', { name: 'token', type: 'password', autocomplete: 'off', placeholder: 'github_pat_…', required: true })));
+    openDialog('Вход в режим редактирования', body, async (form) => {
+      const t = val(form, 'token'); if (!t) return 'Вставьте токен.';
+      state.token = t;
+      try { await enterAdmin(); } catch (e) { state.token = null; return apiErr(e); }
+      store.set(TOKEN_KEY, t);
+      toast('Режим редактирования включён');
+    }, 'Войти');
+  }
+
+  function projectForm(pr) {
+    const isNew = !pr;
+    const body = el('div', {},
+      el('div', { class: 'grid2' },
+        field('Название', el('input', { name: 'name', value: pr ? pr.name : '', required: true })),
+        field('Папка в репозитории', el('input', { name: 'id', value: pr ? pr.id : '', readonly: !isNew, placeholder: 'например, siber' }), isNew ? 'Латиница, без пробелов. Потом не меняется.' : 'Не меняется.')),
+      field('Сайт клиента', el('input', { name: 'url', value: pr ? pr.url || '' : '', placeholder: 'https://' })),
+      field('Описание', el('input', { name: 'description', value: pr ? pr.description || '' : '' })));
+    const form = openDialog(isNew ? 'Новый клиент' : 'Клиент', body, (f) => {
+      const name = val(f, 'name'); if (!name) return 'Укажите название.';
+      const url = val(f, 'url'); if (url && !/^https?:\/\//i.test(url)) return 'Сайт должен начинаться с http:// или https://';
+      if (isNew) {
+        const id = slug(val(f, 'id') || name); if (!id) return 'Укажите папку латиницей.';
+        if (projectById(id)) return 'Клиент с такой папкой уже есть.';
+        state.data.projects.push({ id, name, url, description: val(f, 'description') });
+        change(`Добавлен клиент ${name}`);
+      } else {
+        Object.assign(pr, { name, url, description: val(f, 'description') });
+        change(`Изменён клиент ${name}`);
+      }
+    });
+    if (isNew) form.elements.name.addEventListener('input', (e) => { if (!form.elements.id.dataset.touched) form.elements.id.value = slug(e.target.value); });
+    if (isNew) form.elements.id.addEventListener('input', (e) => { e.target.dataset.touched = '1'; });
+  }
+
+  function protoForm(p, preset = {}) {
+    const isNew = !p;
+    const cur = p || { project: preset.project || (state.data.projects[0] || {}).id || '', title: '', path: preset.path || '', files: [], status: 'draft', owner: '', description: '', screens: [], links: [] };
+    const htmlFiles = (state.repoFiles || Object.keys(state.history)).filter(f => /\.html?$/i.test(f) && f !== 'index.html');
+    const dl = el('datalist', { id: 'dl-files' }, htmlFiles.map(f => el('option', { value: f })));
+    const upload = el('input', { type: 'file', accept: '.html,.htm,.css,.js,.json,.svg,.png,.jpg,.jpeg,.webp', style: 'max-width:100%' });
+    const upStatus = el('span', { class: 'hint' });
+
+    const body = el('div', {}, dl,
+      el('div', { class: 'grid2' },
+        field('Клиент', el('select', { name: 'project' }, state.data.projects.map(pr => el('option', { value: pr.id, selected: pr.id === cur.project, text: pr.name })))),
+        field('Статус', el('select', { name: 'status' }, state.data.statuses.map(s => el('option', { value: s.id, selected: s.id === cur.status, text: s.label }))))),
+      field('Название', el('input', { name: 'title', value: cur.title, required: true })),
+      el('div', { class: 'grid2' },
+        field('Главный файл', el('input', { name: 'path', value: cur.path, list: 'dl-files', placeholder: 'siber/index.html' }), 'Путь от корня репозитория.'),
+        field('Ответственный', el('input', { name: 'owner', value: cur.owner || '' }))),
+      field('Загрузить файл в папку клиента', el('div', {}, upload, ' ', upStatus), 'Файл сразу публикуется отдельным коммитом. Файл с таким же именем будет заменён.'),
+      field('Описание', el('textarea', { name: 'description', text: cur.description || '' })),
+      field('Файлы прототипа', el('textarea', { name: 'files', class: 'mono', text: (cur.files || []).join('\n') }),
+        'По одному на строку. По ним считаются дата изменения и история. Если пусто, берётся только главный файл.'),
+      field('Экраны', el('textarea', { name: 'screens', class: 'mono', text: pairsToText(cur.screens) }),
+        'По одному на строку: Название | ссылка, например «Еженедельный | siber/#/weekly».'),
+      field('Ссылки', el('textarea', { name: 'links', class: 'mono', text: pairsToText(cur.links) }),
+        'По одной на строку: Название | URL, например «ТЗ | https://…».'));
+
+    const form = openDialog(isNew ? 'Новый прототип' : 'Прототип', body, (f) => {
+      const title = val(f, 'title'); if (!title) return 'Укажите название.';
+      const path = val(f, 'path').replace(/^\/+/, ''); if (!path) return 'Укажите главный файл.';
+      if (!safeHref(path) || /^https?:/i.test(path)) return 'Главный файл: путь внутри репозитория, например siber/index.html';
+      const screens = textToPairs(val(f, 'screens')), links = textToPairs(val(f, 'links'));
+      const bad = [...screens, ...links].find(x => !safeHref(x.url)); if (bad) return `Недопустимая ссылка: ${bad.url}`;
+      const next = {
+        project: f.elements.project.value, title, path, status: f.elements.status.value,
+        owner: val(f, 'owner'), description: val(f, 'description'),
+        files: val(f, 'files').split('\n').map(s => s.trim().replace(/^\/+/, '')).filter(Boolean),
+        screens, links,
+      };
+      if (isNew) {
+        let id = slug(next.project + '-' + title) || 'proto'; while (state.data.prototypes.some(x => x.id === id)) id += '-2';
+        state.data.prototypes.push({ id, ...next, statusDate: today() });
+        change(`Добавлен прототип ${title}`);
+      } else {
+        if (next.status !== p.status) next.statusDate = today();
+        Object.assign(p, next);
+        change(`Изменён прототип ${title}`);
+      }
+    });
+
+    upload.addEventListener('change', async () => {
+      const file = upload.files[0]; if (!file) return;
+      const proj = form.elements.project.value;
+      if (!proj) { upStatus.textContent = 'Сначала выберите клиента.'; return; }
+      const target = `${proj}/${file.name.replace(/[^\w.\-]+/g, '-')}`;
+      try {
+        upStatus.textContent = 'Проверяю…';
+        const existing = await getFile(target);
+        if (existing && !confirm(`Файл ${target} уже есть. Заменить?`)) { upStatus.textContent = 'Отменено.'; upload.value = ''; return; }
+        upStatus.textContent = 'Загружаю…';
+        const b64 = bytesToB64(new Uint8Array(await file.arrayBuffer()));
+        await putFile(target, b64, `${existing ? 'Update' : 'Add'} ${target}`, existing && existing.sha);
+        upStatus.textContent = `Загружено: ${target}`;
+        if (state.repoFiles && !state.repoFiles.includes(target)) state.repoFiles.push(target);
+        if (/\.html?$/i.test(target)) {
+          if (!form.elements.path.value.trim()) form.elements.path.value = target;
+          const fl = form.elements.files; const lines = fl.value.split('\n').map(s => s.trim()).filter(Boolean);
+          if (!lines.includes(target)) fl.value = [...lines, target].join('\n');
+        }
+        toast('Файл опубликован, сайт обновится примерно через минуту');
+      } catch (e) { upStatus.textContent = 'Ошибка: ' + apiErr(e); }
+      upload.value = '';
+    });
+  }
+
+  // ---------- admin session ----------
+  async function enterAdmin() {
+    const [user, file] = await Promise.all([gh('https://api.github.com/user').catch(() => null), getFile(DATA_PATH)]);
+    if (file === null) throw new Error('Нет доступа к репозиторию с этим токеном.');
+    state.data = normalize(JSON.parse(b64ToText(file.content)));
+    state.sha = file.sha;
+    state.login = user && user.login || '';
+    state.admin = true;
+    state.changes = [];
+    try {
+      const tree = await gh(`/git/trees/${BRANCH}?recursive=1`);
+      state.repoFiles = tree ? tree.tree.filter(x => x.type === 'blob').map(x => x.path) : null;
+    } catch { state.repoFiles = null; }
+    render();
+  }
+  function logout() {
+    if (state.changes.length && !confirm('Есть несохранённые изменения. Выйти без сохранения?')) return;
+    store.del(TOKEN_KEY); state.token = null; state.admin = false; state.changes = []; state.login = '';
+    loadPublic();
+  }
+  async function discard() {
+    if (!confirm('Отменить все несохранённые изменения?')) return;
+    try { await enterAdmin(); toast('Изменения отменены'); } catch (e) { toast(apiErr(e)); }
+  }
+  async function save() {
+    const btn = $('#saveBtn'); if (btn) btn.disabled = true;
+    try {
+      const latest = await getFile(DATA_PATH);
+      let sha = latest ? latest.sha : null;
+      if (latest && latest.sha !== state.sha &&
+          !confirm('Список прототипов уже изменили в другом месте. Перезаписать своими изменениями?\n(Отмена: оставить как есть, ваши правки не сохранятся)')) {
+        if (btn) btn.disabled = false; return;
+      }
+      const n = state.changes.length;
+      const title = n === 1 ? state.changes[0] : `Список прототипов: ${n} ${plural(n, 'изменение', 'изменения', 'изменений')}`;
+      const message = n === 1 ? title : title + '\n\n' + state.changes.map(c => '- ' + c).join('\n');
+      const json = JSON.stringify(state.data, null, 2) + '\n';
+      const res = await putFile(DATA_PATH, bytesToB64(new TextEncoder().encode(json)), message, sha);
+      state.sha = res.content.sha; state.changes = [];
+      render();
+      toast('Сохранено. Сайт обновится примерно через минуту', 4000);
+    } catch (e) { toast('Не сохранено: ' + apiErr(e), 5000); if (btn) btn.disabled = false; }
+  }
+
+  // ---------- loading ----------
+  function normalize(d) {
+    d = d || {};
+    return { statuses: d.statuses || [], projects: d.projects || [], prototypes: (d.prototypes || []).map(p => ({ screens: [], links: [], files: [], ...p })) };
+  }
+  async function loadPublic() {
+    const [data, hist] = await Promise.all([
+      fetch(DATA_PATH, { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('history.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
+    if (!data) { $('#list').replaceChildren(el('p', { class: 'empty', text: 'Не удалось загрузить список прототипов.' })); renderFooter(); return; }
+    state.data = normalize(data);
+    if (hist) { state.history = hist.files || {}; state.generated = hist.generated; }
+    render();
+  }
+
+  $('#q').addEventListener('input', (e) => { state.q = e.target.value.trim(); renderList(); });
+  window.addEventListener('beforeunload', (e) => { if (state.admin && state.changes.length) { e.preventDefault(); e.returnValue = ''; } });
+
+  (async () => {
+    await loadPublic();
+    const t = store.get(TOKEN_KEY);
+    if (t) {
+      state.token = t;
+      try { await enterAdmin(); }
+      catch (e) { state.token = null; store.del(TOKEN_KEY); toast('Вход сброшен: ' + apiErr(e), 4000); }
+    }
+  })();
+})();
+</script>
 </body>
 </html>

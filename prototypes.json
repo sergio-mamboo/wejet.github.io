@@ -1,0 +1,60 @@
+{
+  "statuses": [
+    { "id": "draft",    "label": "Черновик",                  "color": "#8A94A6" },
+    { "id": "review",   "label": "На согласовании у клиента", "color": "#F28C00" },
+    { "id": "approved", "label": "Согласован",                "color": "#1BA36A" },
+    { "id": "dev",      "label": "В разработке",              "color": "#0094FF" },
+    { "id": "archive",  "label": "Архив",                     "color": "#B0B7C3" }
+  ],
+  "projects": [
+    {
+      "id": "siber",
+      "name": "SIBER",
+      "url": "https://siber.ru/",
+      "description": "Отчёты по сделкам в Битрикс24"
+    }
+  ],
+  "prototypes": [
+    {
+      "id": "siber-deal-reports",
+      "project": "siber",
+      "title": "Отчёты по сделкам",
+      "path": "siber/index.html",
+      "files": [
+        "siber/index.html",
+        "siber/weekly-report-prototype.html",
+        "siber/monthly-quarterly-report-prototype.html",
+        "siber/rop-report-prototype.html",
+        "siber/weekly-management-report-prototype.html",
+        "siber/monthly-quarterly-management-report-prototype.html",
+        "siber/summary-management-report-prototype.html"
+      ],
+      "description": "Группа отчётов по сделкам внутри интерфейса Битрикс24: отчёты для сотрудников коммерческой службы и для руководства.",
+      "status": "dev",
+      "statusDate": "2026-11-17",
+      "owner": "Сергей Смирнов",
+      "screens": [
+        { "label": "Сотрудники · Еженедельный",           "url": "siber/#/weekly" },
+        { "label": "Сотрудники · Месячный / Квартальный", "url": "siber/#/monthly" },
+        { "label": "Сотрудники · РКС, план-факт",          "url": "siber/#/rop" },
+        { "label": "Руководство · Еженедельный",           "url": "siber/#/weekly-management" },
+        { "label": "Руководство · Месячный / Квартальный", "url": "siber/#/monthly-quarterly-management" },
+        { "label": "Руководство · Сводный",                "url": "siber/#/summary-management" }
+      ],
+      "links": []
+    },
+    {
+      "id": "siber-deal-reports-blue",
+      "project": "siber",
+      "title": "Отчёты по сделкам НИЦ ТСО (синий вариант)",
+      "path": "siber/reports-prototype-blue.html",
+      "files": ["siber/reports-prototype-blue.html"],
+      "description": "",
+      "status": "draft",
+      "statusDate": "2026-11-17",
+      "owner": "",
+      "screens": [],
+      "links": []
+    }
+  ]
+}
