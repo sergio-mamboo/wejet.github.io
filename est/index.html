@@ -180,6 +180,7 @@ const PEOPLE = {
 };
 
 const PROJECT_STAGES = ['Заключение договора','Подготовка','Реализация','Сдача','Гарантия','Завершён'];
+const PROJECT_STAGE_COLORS = {'Заключение договора':'#2F6FB5','Подготовка':'#7A4FD1','Реализация':'#2E9E4F','Сдача':'#D98200','Гарантия':'#0F8C8C','Завершён':'#6B7785'};
 const DOC_STAGES = ['Подготовка','Согласование','Подписание','Оригиналы','Готов'];
 const PAY_STAGES = ['Новая','Согласование руководителем','Согласование ФЭС','Передана в 1С','Оплачена','Отклонена'];
 const KC_STAGES = ['Оформление','Действует','Закрыт'];
@@ -413,7 +414,7 @@ function reg(scr,label,s){TRACE.set(scr+'|'+label,{scr,label,...s}); return srcH
 /* ===================== UI ===================== */
 let state={pid:'P-014'};
 const $=id=>document.getElementById(id);
-function stages(list,cur){const i=list.indexOf(cur);return `<div class="stages">${list.map((s,j)=>`<span class="${j<i?'done':j===i?'cur':''}">${esc(s)}</span>`).join('')}</div>`;}
+function stages(list,cur,colors){const i=list.indexOf(cur);return `<div class="stages">${list.map((s,j)=>{const c=colors&&colors[s];const st=c?(j===i?` style="background:${c};color:#fff"`:j<i?` style="background:${c}2E;color:${c}"`:''):'';return `<span class="${j<i?'done':j===i?'cur':''}"${st}>${esc(s)}</span>`;}).join('')}</div>`;}
 function chipFor(st){
   if(['Действует','Оплачена','Готов','Принят','Закрыт'].includes(st)) return 'ok';
   if(['Отклонена'].includes(st)) return 'bad';
@@ -449,7 +450,7 @@ function vProjects(){
   return `<h1>Мои проекты</h1><div class="sub">${PEOPLE[ME].n}, ${PEOPLE[ME].r.toLowerCase()}</div>
   <div class="grid g3">${PROJECTS.map(p=>{
     const c=projCalc(p.id), al=alerts(p.id), tot=cdays(p.start,p.end), el=Math.min(Math.max(cdays(p.start),0),tot);
-    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><h2 style="margin:0">${link(['summary',p.id],p.name)}</h2><span class="chip pstage" style="flex:none;margin-top:2px">${esc(p.stage)}</span></div>
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><h2 style="margin:0">${link(['summary',p.id],p.name)}</h2><span class="chip pstage" style="flex:none;margin-top:2px;background:${PROJECT_STAGE_COLORS[p.stage]}">${esc(p.stage)}</span></div>
     <div class="sub" style="margin:4px 0 10px">${esc(p.client)} · ${fd(p.start)} - ${fd(p.end)}</div>
     <div class="kpis">
       ${kpi(S,'Договор с клиентом',money(c.cTotal),src('sp','Договор с клиентом','сумма + действующие ДС'))}
@@ -478,7 +479,7 @@ function vSummary(){
   const late=p.sched.filter(s=>s.fe&&s.fe>s.pe);
   return `<h1>${esc(p.name)}</h1>
   <div class="sub">${esc(p.client)} · объект ${esc(p.object.id)} «${esc(p.object.name)}» · ${fd(p.start)} - ${fd(p.end)}</div>
-  ${stages(PROJECT_STAGES,p.stage)}${reg(S,'Стадия проекта',src('sp','Проект','стадия'))}
+  ${stages(PROJECT_STAGES,p.stage,PROJECT_STAGE_COLORS)}${reg(S,'Стадия проекта',src('sp','Проект','стадия'))}
   ${p.object.passport<100?`<div class="banner" style="margin-top:12px">Паспорт объекта заполнен на ${p.object.passport}%. Проект не перейдёт дальше «Заключения договора», пока паспорт не заполнен.${reg(S,'Паспорт объекта',src('sp','Объект','обязательные поля стадии «Готов к проекту»'))}</div>`:''}
   <div class="grid g2" style="margin-top:14px">
    <div>
